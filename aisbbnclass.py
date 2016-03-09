@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.0.1.3 (build)  (lib:4.8.0)
+@version: 2.0.1.4 (build)  (lib:4.8.0)
  
 """
 
@@ -485,10 +485,10 @@ class GetHandler(BaseHTTPRequestHandler):
     def log_by_index(self,start_index,end_index):        
         dev         = DEV_HND
         dev.status  = mySO.AIS_GetLogByIndex(dev.hnd,PASS,start_index,end_index)        
-        self.wfile.write('AIS_GetLogByIndex:(pass: %s [ %d - %d ] >> %s\n)' % (PASS,start_index,end_index,E_ERROR_CODES[dev.status]))
-        self.DoCmd()
+        self.wfile.write('AIS_GetLogByIndex:(pass: %s [ %d - %d ] >> %s\n)' % (PASS,start_index,end_index,E_ERROR_CODES[dev.status]))        
         if dev.status != 0:
             return
+        self.DoCmd()    
         self.PrintLOG()    
     
     def log_by_time(self,start_time,end_time):
@@ -496,10 +496,10 @@ class GetHandler(BaseHTTPRequestHandler):
         end_time   = c_uint64(end_time)    
         dev        = DEV_HND
         dev.status = mySO.AIS_GetLogByTime(dev.hnd,PASS,start_time,end_time)
-        self.wfile.write('AIS_GetLogByTime:(pass: %s [ %10d - %10d ] >> %s)\n' % (PASS,start_time.value,end_time.value,E_ERROR_CODES[dev.status]))
-        self.DoCmd()
+        self.wfile.write('AIS_GetLogByTime:(pass: %s [ %10d - %10d ] >> %s)\n' % (PASS,start_time.value,end_time.value,E_ERROR_CODES[dev.status]))        
         if dev.status !=0:
             return
+        self.DoCmd()    
         self.PrintLOG()     
     
     def whitelist_read(self):    
@@ -764,6 +764,7 @@ class GetHandler(BaseHTTPRequestHandler):
         self.MainLoop()    
         self.wfile.write("LOG unread (incremental) = %d\n" % dev.UnreadLog)    
         self.u_log_info()
+        return dev.UnreadLog
     
     def u_log_get(self):
         dev           = DEV_HND
@@ -1064,6 +1065,7 @@ class GetHandler(BaseHTTPRequestHandler):
         except (Exception) as error_mess:
                 self.wfile.write(error_mess)
                 self.wfile.write(traceback.print_exc())
+        
         """
         self.send_response(200)  # OK
         self.send_header('Content-type', 'text/html')
@@ -1071,28 +1073,16 @@ class GetHandler(BaseHTTPRequestHandler):
         """
        
         return
-    
-    
-   
-   
-                             
-    
+
            
 def RunAll():
-    global serv
-    global meni 
-     
-    #rte  = threading.Thread(target=RTEListen) 
-    serv = threading.Thread(target=handler_server)
-   # rte.start()
+    global serv   
+    serv = threading.Thread(target=handler_server)   
     serv.start()       
     while True:
-        try:
-            # if rte.isAlive():
-                # rte.join(timeout = RTE_JOIN)
-            if serv.isAlive():
-                serv.join(timeout = SERV_JOIN)
-        
+        try:          
+            if serv.isAlive():            
+                serv.join(timeout = SERV_JOIN)                     
         except (KeyboardInterrupt,SystemExit,Exception) as e:
             httpd.server_close()
             print '\nServer close\nProgram close',e
