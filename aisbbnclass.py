@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.0.1.4 (build)  (lib:4.8.0)
+@version: 2.0.1.5 (build)  (lib:4.8.0)
  
 """
 
@@ -62,10 +62,6 @@ def AISUpdateAndGetCount():
         return mySO.AIS_List_UpdateAndGetCount()
     
 
-    
-
-      
-        
          
 def AISGetTime():
         
@@ -152,6 +148,7 @@ def AISOpen():
         dev.hnd  = HND_LIST[0]  #default           
         print "DEFAULT DEVICE hnd[0x%X] \n" % dev.hnd  
 
+
 def dev_list():
     list_init = c_bool
     list_init = False
@@ -170,70 +167,7 @@ def dev_list():
     return res 
  
  
-# def PrintLOG():
-       
-        # logIndex     = c_int()
-        # logAction    = c_int()
-        # logReaderId  = c_int()
-        # logCardId    = c_int()
-        # logSystemId  = c_int()
-        # logNfcUid       = (c_uint8 * NFC_UID_MAX_LEN)()
-        # logNfcUidLen    = c_int()
-        # logTimeStamp    = c_uint64() 
-        # nfcuid       = str()
-                   
-        # dev = DEV_HND 
-        # print rte_list_header[0],'\n', \
-              # rte_list_header[1],'\n', \
-              # rte_list_header[2]   
-               
-        # while True:            
-            # dev.status =  mySO.AIS_ReadLog(dev.hnd,byref(logIndex),
-                                               # byref(logAction),
-                                               # byref(logReaderId),
-                                               # byref(logCardId),
-                                               # byref(logSystemId),
-                                               # logNfcUid,
-                                               # byref(logNfcUidLen),
-                                               # byref(logTimeStamp)
-                                          # )
-                   
-            # dev.log.log_index       = logIndex.value
-            # dev.log.log_action      = logAction.value
-            # dev.log.log_reader_id   = logReaderId.value
-            # dev.log.log_card_id     = logCardId.value
-            # dev.log.log_system_id   = logSystemId.value
-            # dev.log.log_nfc_uid     = logNfcUid
-            # dev.log.log_nfc_uid_len = logNfcUidLen.value
-            # dev.log.log_timestamp   = logTimeStamp.value
-            
-            
-            # if dev.status != 0:
-                # break
-            
-            # nfcuid = '' 
-            # for i in range(0,dev.log.log_nfc_uid_len):                
-                # nfcuid += ":%02X" % (dev.log.log_nfc_uid[i])
-            
-            # uidNfcUidLen = '[' + str(dev.log.log_nfc_uid_len) + '] | ' + nfcuid  
-          
-            
-            
-            # print(log_format.format(dev.log.log_index,
-                                    # #string_at(mySO.dbg_action2str(dev.log.log_action)).decode('utf-8'),
-                                    # dbg_action2str(dev.log.log_action),
-                                    # dev.log.log_reader_id,
-                                    # dev.log.log_card_id,
-                                    # dev.log.log_system_id,
-                                    # uidNfcUidLen,                                    
-                                    # dev.log.log_timestamp,
-                                    # time.ctime(dev.log.log_timestamp)
-                                   # )
-                 # )
-       
-        # print rte_list_header[2]
-        # print wr_status('AIS_GetLog()', dev.status)
- 
+
     
 def SendToMysql(logIndex,logAction,logReaderId,logCardId,logSystemId,nfcUID,nfcUIDLen,timestamp,mytime):
         
@@ -285,14 +219,9 @@ def http_post_to_mysql(logIndex,logAction,logReaderId,logCardId,logSystemId,nfcU
            }
     
     rte  = urllib.urlencode(rte)
-    path = HTTP + SERVER_NAME + RTE_EVENTS    
-    print path
+    path = HTTP + SERVER_NAME + RTE_EVENTS        
     http_request(path, rte)
- 
-                             
     
-            
-            
 def AIS_GetLog_Set():
     dev       = DEV_HND
     DL_STATUS = mySO.AIS_GetLog_Set(dev.hnd, PASS)
@@ -377,11 +306,7 @@ def TestLights(choise):
         red_master   = False
         green_slave  = False
         red_slave    = False
-        dev          = DEV_HND
-        
-        
-        
-        
+        dev          = DEV_HND       
         if choise == 'g':
                 green_master = not green_master
         elif choise == 'r':
@@ -394,13 +319,11 @@ def TestLights(choise):
         DL_STATUS = mySO.AIS_LightControl(dev.hnd,green_master,red_master,green_slave,red_slave)
         res = "AIS_LightControl(green= %d | red= %d || slave:green= %d | red= %d) > %s\n" % (green_master,red_master,green_slave,red_slave,E_ERROR_CODES[ DL_STATUS])                                                                                            
         return res
-    
-
-    
-    
+ 
     
 class GetHandler(BaseHTTPRequestHandler):
     
+      
     def GetListDevices(self):
         hnd            = c_void_p()
         devSerial      = c_char_p()
@@ -556,10 +479,11 @@ class GetHandler(BaseHTTPRequestHandler):
     
     
     def RTEListen(self):
+        global seconds
         stop_time = c_uint64()
-        stop_time = time.time() + 10 #10
+        stop_time = time.time() + int(seconds) #10
         dev       = DEV_HND
-        self.wfile.write("Wait for RTE for %d...\n" % SECONDS )      
+        self.wfile.write("Wait for RTE for %d...\n" % int(seconds ))      
         while (time.ctime(time.time()) < time.ctime(stop_time)) :
             for hnd in HND_LIST:
                 dev.hnd = hnd            
@@ -753,13 +677,7 @@ class GetHandler(BaseHTTPRequestHandler):
         if r_log:
             self.wfile.write("AIS_ReadRTE_Count() %d\n" % r_log)
         
-    def u_log_count(self):
-    
-    #===if dll_less 4.8.0
-    # dev.status = mySO.AIS_UnreadLOG_Count(dev.hnd,byref(log_available))
-    # if dev.status:
-    # print wr_status("AIS_UnreadLOG_Count()",dev.status)
-    # return
+    def u_log_count(self):      
         dev           = DEV_HND
         self.MainLoop()    
         self.wfile.write("LOG unread (incremental) = %d\n" % dev.UnreadLog)    
@@ -894,10 +812,12 @@ class GetHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         pass
         return
-       
+    
+    
     def do_POST(self):
         pass
-                
+        global seconds  
+        
         ctype, pdict = cgi.parse_header(self.headers['content-type'])
         if ctype == 'multipart/form-data':
             pq = cgi.parse_multipart(self.rfile, pdict)
@@ -909,18 +829,16 @@ class GetHandler(BaseHTTPRequestHandler):
       
         try:
             dev         = DEV_HND                                 
-            f           = ''.join(pq["function"])
+            f           = ''.join(pq[FUNCTION])  
+           
             
-            
-            device     = ''.join(pq[DEVICE])
+            seconds     = ''.join(pq[RTE])
+            device      = ''.join(pq[DEVICE])
             if device == None:
                 device = dev.hnd
             else:
                 dev.hnd     = HND_LIST[int(device) - 1]
-           
-
-
-                    
+            
             if pq[START_INDEX] != None or pq[END_INDEX] != None:
                start_index = (''.join(pq[START_INDEX]))
                end_index   = (''.join(pq[END_INDEX]))
@@ -948,6 +866,7 @@ class GetHandler(BaseHTTPRequestHandler):
             if pq[UNREAD_LOG] != None:                 
                     get_unread_log = (''.join(pq[UNREAD_LOG]))
             
+          
             
             if f == 'q':
                 self.GetListDevices()
@@ -1055,12 +974,13 @@ class GetHandler(BaseHTTPRequestHandler):
            
            
             elif f == 'x':
-                self.wfile.write("\nClose server !\nClose program !\n")            
+                self.wfile.write("\nServer stopped !\nClose program !\n")            
                 shut_event.set()
-                httpd.server_close()
-                httpd.shutdown()
-                os.system('pkill -9 python')
-                sys.exit()
+                httpd.server_close()                
+                if sys.platform.startswith('linux'):
+                    os.system('pkill -9 python')
+                elif sys.platform.startswith('win'):                    
+                    sys.exit(0)
                 
         except (Exception) as error_mess:
                 self.wfile.write(error_mess)
@@ -1081,13 +1001,18 @@ def RunAll():
     serv.start()       
     while True:
         try:          
+        
             if serv.isAlive():            
                 serv.join(timeout = SERV_JOIN)                     
+        
         except (KeyboardInterrupt,SystemExit,Exception) as e:
             httpd.server_close()
-            print '\nServer close\nProgram close',e
+            print '\nServer stopped\nProgram close',e
             shut_event.set()
-            os.system('pkill -9 python')
+            if sys.platform.startswith('linux'):
+                os.system('pkill -9 python')
+            elif sys.platform.startswith('win'):            
+                sys.exit(0)            
             break
             
 
@@ -1101,9 +1026,7 @@ def handler_server():
 def init():   
     print GetDLLVersion() 
     global httpd   
-    dev_list()  
-    
-    
+    dev_list()     
     httpd = HTTPServer((HTTP_SERVER_NAME,HTTP_SERVER_PORT),GetHandler) 
     httpd.socket.setsockopt(SOL_SOCKET,SO_REUSEADDR,1) 
     RunAll() 

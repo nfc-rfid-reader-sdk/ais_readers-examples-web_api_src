@@ -20,7 +20,7 @@ THD_SLEEP = .7
 RTE_JOIN  = 1.0 #timeout 3.0
 SERV_JOIN = 3.0 #timeout
 #timers
-SECONDS          = 10
+
 UNREAD_LOG_TIMER = 100
 
 
@@ -50,6 +50,9 @@ UNREAD_LOG       = 'unread_log'
 UNR_COUNT        = '1'
 UNR_GET          = '2'
 UNR_ACK          = '3'
+RTE              = 'rte'
+STOP_SERVER      = 'stop_server'
+FUNCTION         = 'get_function'
 
 #php 
 EVENTS          = 'events.php'
