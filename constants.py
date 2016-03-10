@@ -10,11 +10,13 @@ LIB_PATH     = '/shell/lib/testing/ver.4.8.0/'
 WIN_PATH     = 'windows/x86/'
 LINUX_PATH   = 'linux/x86/'
 ARMHF_PATH   = 'linux/arm-hf/'
+ARM_PATH     = 'linux/arm/'
 
 LIB_WIN32    = 'ais_readers-x86.dll'
 LIB_LINUX    = 'libais_readers-x86_64.so'
-LIB_ARM      = 'libais_readers-arm.so'
 LIB_ARMHF    = 'libais_readers-armhf.so'
+LIB_ARM      = 'libais_readers-arm.so'
+
 
 THD_SLEEP = .7
 RTE_JOIN  = 1.0 #timeout 3.0
