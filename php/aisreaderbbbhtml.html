@@ -60,9 +60,9 @@
 		<td>E</td>
 		<td>Real Time Events&nbsp<input type="text" name="rte" size="3" value="10"/></td>	
 		<td>P</td>
-		<td>Set default password&nbsp<input type="text" name="default_app_pass" size="5" width="4"/></td>
+		<td>Set application password&nbsp<input type="text" name="default_app_pass" size="5" width="4"/></td>
 		<td>p</td>
-		<td>Change password&nbsp<input type="text" name="new_pass" size="5"/></td>
+		<td>Change device password&nbsp<input type="text" name="new_pass" size="5"/></td>
 	</tr>
     <tr>	
 		<td>l</td>
@@ -94,24 +94,39 @@
 		<td>Black-list Read</td>	
 		<td>B</td>
 		<td>Black-list Write&nbsp<input type="text" name="black_list_write" size="15"/></td>	
-		<td>r</td>
-		<td>Red Master</td>
-	</tr>
+		<td>L</td>
+		<td><input type="radio" name='lights' value='red_master' style="cursor:pointer;" checked="checked">Red Master
+			<input type="radio" name='lights' value='green_master' style="cursor:pointer;">Green Master
+		    <input type="radio" name='lights' value='red_slave' style="cursor:pointer;" >Red Slave
+		    <input type="radio" name='lights' value='green_slave' style="cursor:pointer;">Green Slave
+		</td>
+	</tr>	
 	<tr>
 		<td>g</td>
-		<td>Green master</td>	
-		<td>R</td>
-		<td>Red Slave</td>	
+		<td>Get IO state</td>
 		<td>G</td>
-		<td>Green slave</td>
+		<td>Open gate/lock</td>
+		<td>y</td>
+		<td>Relay toggle state</td>
 	</tr>
 	<tr>
 		<td>v</td>
-		<td>Get DLL version</td>	
+		<td>Get Library version</td>	
 		<td>f</td>
 		<td>Get Firmware version</td>	
 		<td>i</td>
 		<td>Devices Information</td>
+	</tr>
+	<tr>
+		<td>Q</td>
+		<td>Edit device list for checking >></td>
+		<td colspan="4">Show device list :&nbsp<select name="device_list" style="cursor:pointer;">
+												<option value="not_show">Not Show</value>
+												<option value="show">Show</value>
+											    </select>		
+		    &nbsp Device type:<input type="text" name="device_type" size="5"/>
+		    &nbsp Device bus ID:<input type="text" name="device_id" size="5"/>		
+		</td>
 	</tr>
 	
 </table>

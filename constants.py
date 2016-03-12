@@ -3,7 +3,7 @@
 from dl_status import E_ERROR_CODES
 import ctypes
 
-LIB_PATH     = '/shell/lib/testing/ver.4.8.0/'
+LIB_PATH     = '/shell/lib/testing/ver.4.9.2/'
 
 
 
@@ -37,7 +37,9 @@ URL_ERROR_MESSAGE   = "INPUT ERROR IN URL QUERY STRING !"
 NFC_UID_MAX_LEN = 10
 SECONDS         = 10
 DL_STATUS       = E_ERROR_CODES
- 
+DL_OK           = 0
+PULSE_DURATION  = 2000 
+
 #url_query_string
 DEVICE           = 'device'
 START_INDEX      = 'start_index'
@@ -55,6 +57,11 @@ UNR_ACK          = '3'
 RTE              = 'rte'
 STOP_SERVER      = 'stop_server'
 FUNCTION         = 'get_function'
+LIGHTS           = 'lights'
+DEVICE_LIST      = 'device_list'
+DEVICE_TYPE      = 'device_type'
+DEVICE_ID        = 'device_id'
+SHOW_DEV_LIST    = 'show'
 
 #php 
 EVENTS          = 'events.php'
