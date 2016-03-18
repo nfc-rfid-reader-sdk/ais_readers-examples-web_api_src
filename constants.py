@@ -1,9 +1,6 @@
 
 
-from dl_status import E_ERROR_CODES
-import ctypes
-
-LIB_PATH     = '/shell/lib/testing/ver.4.9.2/'
+LIB_PATH     = '/shell/lib/testing/ver.4.9.4/'
 
 
 
@@ -36,8 +33,6 @@ RECORDS_TO_ACK      = 1
 URL_ERROR_MESSAGE   = "INPUT ERROR IN URL QUERY STRING !"
 NFC_UID_MAX_LEN = 10
 SECONDS         = 10
-DL_STATUS       = E_ERROR_CODES
-DL_OK           = 0
 PULSE_DURATION  = 2000 
 
 #url_query_string

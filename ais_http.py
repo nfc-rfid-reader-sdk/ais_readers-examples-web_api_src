@@ -2,14 +2,9 @@
 
 """
 @author: Vladan S
-@version: 2.0.1.6 (build)  (lib:4.9.2)
+@version: 2.0.1.7 (build)  (lib:4.9.4)
  
 """
-
-
-
-
-import MySQLdb as mdb
 
 import os
 import sys
@@ -19,27 +14,16 @@ import time
 import traceback
 import requests
 import urllib2,urllib
-
 from platform import platform
 from urlparse import urlparse, parse_qs
-
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-
 from ctypes import *
 from socket import *
+
+from shell.ais_shell import *
 from constants import *
-from dl_status import *
-from ais_readers_list import *
 
-import device_list
-
-HND_LIST  = []    
-devCount  = c_long()       
-DEV_HND   = device_list .S_DEVICE()
-log_t     = device_list .S_LOG()
-
-
-
+"""
 def GetPlatformLib():       
             if sys.platform.startswith("win32"):
                 return windll.LoadLibrary(os.getcwd() + LIB_PATH + WIN_PATH + LIB_WIN32)
@@ -47,8 +31,8 @@ def GetPlatformLib():
                 return cdll.LoadLibrary(os.getcwd() + LIB_PATH + LINUX_PATH + LIB_LINUX) #ARMHF_PATH + LIB_ARMHF (for BeagleBoneBlack)
             elif platform().lower().find('armv7l-with-debian') > -1:
                 return cdll.LoadLibrary(os.getcwd() + LIB_PATH + LINUX_PATH + LIB_ARM) #ARM
-    
-    
+"""    
+"""    
 def AISGetVersion():
         
         hardware_type    = c_int() 
@@ -61,9 +45,8 @@ def AISGetVersion():
     
 def AISUpdateAndGetCount():          
         return mySO.AIS_List_UpdateAndGetCount()
-    
 
-         
+
 def AISGetTime():
         
         dev      = DEV_HND       
@@ -85,22 +68,15 @@ def AISSetTime():
     timez    = c_int
     DST      = c_int
     offset   = c_int 
-    dev      = DEV_HND
-       
-    currTime = int(time.time())
-    # timez    = time.timezone
-    # DST      = time.daylight
-    # offset   = -3600
-    
+    dev      = DEV_HND       
+    currTime = int(time.time())   
     timez    = mySO.sys_get_timezone()
     DST      = mySO.sys_get_daylight()
-    offset   = mySO.sys_get_dstbias()
-    
+    offset   = mySO.sys_get_dstbias()    
     ais_set_time = mySO.AIS_SetTime
     ais_set_time.argtypes = (c_void_p,c_char_p,c_uint64,c_int,c_int,c_int)
     ais_set_time.restype = c_int
-    result = ais_set_time(dev.hnd,PASS,currTime,timez,DST,offset)
-    
+    result = ais_set_time(dev.hnd,PASS,currTime,timez,DST,offset)    
     res    = "AIS_SetTime(pass:%s)> timezone=%d | DST=%d |offset=%d {%d(%s)%s}|%s\n" % \
              (PASS,timez,DST,offset,result,hex(result),E_ERROR_CODES[result],time.ctime(currTime))        
     return res
@@ -119,13 +95,21 @@ def AISEraseAllDevicesForCheck():
 def AISAddDeviceForCheck(devType,devId):            
         return mySO.AIS_List_AddDeviceForCheck(devType,devId)
     
-                                
+def active_device():  
+    pass      
+    dev     = DEV_HND
+    dev.idx = HND_LIST.index(dev.hnd)    
+    res     = "Active device [%d] | hnd= 0x%X" % (dev.idx + 1,dev.hnd) 
+    return res                                    
+
+
 
 def blacklist_write(black_list_write):    
     dev        = DEV_HND
     dev.status = mySO.AIS_Blacklist_Write(dev.hnd,PASS,black_list_write)
     res        = 'AIS_Blacklist_Write(pass:%s):b_list= %s > %s\n' %  (PASS,black_list_write,dl_status2str(dev.status))
     return res
+
 
 def whitelist_write(white_list_write):       
     dev        = DEV_HND
@@ -139,7 +123,8 @@ def print_percent_hdr():
         for i in range(0,101):            
             sys.stdout.write(str(i % 10))
         sys.stdout.write("\n%=")
-  
+ 
+
 def AISOpen():        
         dev      = DEV_HND
         for hnd in HND_LIST:
@@ -165,28 +150,13 @@ def dev_list():
         print res
     return res 
  
-       
-
-def http_request(path, post_attrib):
-    try:
-        req = urllib2.Request(path, post_attrib)
-        req.add_header("Content-type", "application/x-www-form-urlencoded")
-        page = urllib2.urlopen(req).read()
-    except Exception as e:
-        print e
-
-
 def AIS_GetLog_Set():
     dev       = DEV_HND
     DL_STATUS = mySO.AIS_GetLog_Set(dev.hnd, PASS)
     res       = DL_STATUS,hex( DL_STATUS),E_ERROR_CODES[ DL_STATUS]
-    return res     
-
-        
-             
-# def GetInfoAndDeviceCount():            
-        # print  AISUpdateAndGetCount()
-
+    return res         
+"""
+"""
 def ListDevices():
             
         deviceType = E_KNOWN_DEVICE_TYPES['DL_AIS_BASE_HD_SDK']        
@@ -198,7 +168,19 @@ def ListDevices():
         deviceId = 3        
         DL_STATUS =  AISAddDeviceForCheck(deviceType, deviceId) 
         
-        
+"""
+
+
+def http_request(path, post_attrib):
+    try:
+        req = urllib2.Request(path, post_attrib)
+        req.add_header("Content-type", "application/x-www-form-urlencoded")
+        page = urllib2.urlopen(req).read()
+    except Exception as e:
+        print e
+
+
+"""        
 def GetListInformation():
         hnd            = c_void_p()
         devSerial      = c_char_p()
@@ -247,7 +229,7 @@ def GetListInformation():
                   
             print format_grid[0],'\n'
     
-    
+"""    
 
     
 def TestLights(choise):
@@ -273,7 +255,7 @@ def TestLights(choise):
     
 class GetHandler(BaseHTTPRequestHandler):
     
-      
+    """  
     def GetListDevices(self):
         hnd            = c_void_p()
         devSerial      = c_char_p()
@@ -326,6 +308,11 @@ class GetHandler(BaseHTTPRequestHandler):
                             )                  
             self.wfile.write('\n' + format_grid[0] + '\n')
     
+    # def AISOpen(self):
+        # self.wfile.write(AISOpen())
+    
+    
+    
     def AISOpen(self):
         dev = DEV_HND
         for hnd in HND_LIST:
@@ -338,7 +325,8 @@ class GetHandler(BaseHTTPRequestHandler):
         
         #dev.hnd  = HND_LIST[0]
         #self.wfile.write("\nActive device >> dev[%d] : hnd= 0x%X\n" % ((HND_LIST.index(dev.hnd) + 1),dev.hnd))
- 
+    
+    
     def AISClose(self):
         dev = DEV_HND
         for hnd in HND_LIST:            
@@ -346,6 +334,9 @@ class GetHandler(BaseHTTPRequestHandler):
             acl     = mySO.AIS_Close(dev.hnd)
             res     = "AIS_Close():{ %d(%s):%s}\n" % (acl,hex(acl),E_ERROR_CODES[acl])
             self.wfile.write(res)    
+    
+    
+    
     
     def log_get(self):
            
@@ -356,7 +347,9 @@ class GetHandler(BaseHTTPRequestHandler):
             return   
         self.DoCmd()
         self.PrintLOG() 
-
+    
+    
+    
     def log_by_index(self,start_index,end_index):        
         dev         = DEV_HND
         dev.status  = mySO.AIS_GetLogByIndex(dev.hnd,PASS,start_index,end_index)        
@@ -365,7 +358,7 @@ class GetHandler(BaseHTTPRequestHandler):
             return
         self.DoCmd()    
         self.PrintLOG()    
-    
+   
     def log_by_time(self,start_time,end_time):
         start_time = c_uint64(start_time)
         end_time   = c_uint64(end_time)    
@@ -376,7 +369,7 @@ class GetHandler(BaseHTTPRequestHandler):
             return
         self.DoCmd()    
         self.PrintLOG()     
-    
+   
     def whitelist_read(self):    
         white_list_size = c_int()
         white_list      = c_char_p()    
@@ -388,7 +381,7 @@ class GetHandler(BaseHTTPRequestHandler):
             white_list_size = 0
         self.wfile.write ("AIS_Whitelist_Read(pass:%s): size= %d >%s\n" % (PASS,white_list_size,dl_status2str(dev.status)) )                 
         self.wfile.write(white_list.value)
-    
+   
     def blacklist_read(self):          
         list_size       = c_int()  
         str_black_list  = c_char_p()      
@@ -402,7 +395,7 @@ class GetHandler(BaseHTTPRequestHandler):
         if dev.status and  black_list_size.value <= 0:
             return
         self.wfile.write([str_black_list.value])
-     
+    """ 
     def get_io_state(self):
         pass
         dev         = DEV_HND
@@ -470,32 +463,7 @@ class GetHandler(BaseHTTPRequestHandler):
         self.wfile.write("\nFinish list edit.\n")
         self.wfile.write("AIS_List_GetDevicesForCheck() AFTER UPDATE \n%s" % AISGetDevicesForCheck())
         
-        #self.print_available_devices()
-        """
-        while True:
-            self.wfile.write("Enter device type (1,2, ... , %d) ('x' for exit)  : " % (max_dev-1))
-            #sys.stdin.read(1)
-            #r = self.rfile.read()
-            r = 11
-            if not r or r == 'x':
-                break
-             
-            deviceType = int(r)        
-            self.wfile.write("Enter device bus ID (if full duplex then enter 0): ")    
-            #sys.stdin.read(1)
-            #r = self.rfile.read()
-            r = 0
-            if not r or r == 'x':
-                deviceId = 0
-            else:    
-                deviceId = int(r)    
-            
-            if list_erased == False:
-                
-                list_erased = True
-                
-            
-        """
+       
     
 
 
@@ -865,7 +833,7 @@ class GetHandler(BaseHTTPRequestHandler):
             else:
                 dev.hnd  = HND_LIST[int(device) - 1]
             
-            ACTIVE_DEV_HEADLINE = "Active device : index[%d] | hnd= 0x%X\n" % ((HND_LIST.index(dev.hnd) + 1),dev.hnd)
+            #ACTIVE_DEV_HEADLINE = "Active device : index[%d] | hnd= 0x%X\n" % ((HND_LIST.index(dev.hnd) + 1),dev.hnd)
             
             
             
@@ -906,47 +874,42 @@ class GetHandler(BaseHTTPRequestHandler):
             if pq[DEVICE_ID] != None:
                 device_id  = ''.join(pq[DEVICE_ID])
             
+           
             
-            
-            
-            if f == 'q':
-                self.GetListDevices()
+            if f == 'q':                
+                self.wfile.write(GetListInformation())
                 
             elif f == 'o':
-                self.AISOpen()     #self.wfile.write("<h1>" + str(list_res([0][0])) + "</h1>")              
-                   
+                #self.AISOpen() #self.wfile.write("<h1>" + str(list_res([0][0])) + "</h1>")              
+                pass                
+                self.wfile.write(AISOpen())                
+                    
             elif f == 'c':
-                self.AISClose()
+                self.wfile.write(AISClose())
             
             if f == 'd':                             
                 self.wfile.write('GET DEVICES COUNT > %s\n' % AISUpdateAndGetCount())                        
         
-            elif f == 't':  
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 't':                  
                 self.wfile.write(AISGetTime())       
             
-            elif f == 'T':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'T':             
                 self.wfile.write(sys_get_timezone_info()+ "\n")
                 self.wfile.write(AISSetTime())
             
             elif f == 'E':
                 self.RTEListen()
                   
-            elif f == 'l': 
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
-                self.wfile.write(self.log_get()) 
+            elif f == 'l':                
+                self.wfile.write(log_get()) 
            
-            elif f == 'n':                 
-                self.wfile.write(ACTIVE_DEV_HEADLINE)                
-                self.log_by_index(int(start_index),int(end_index))               
+            elif f == 'n':                                             
+                self.wfile.write(log_by_index(int(start_index),int(end_index)))               
             
-            elif f == 'N':                           
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'N':                                          
                 self.log_by_time(int(start_time),int(end_time))  
 
-            elif f == 'u':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'u':                
                 get_unread_log = int(get_unread_log)
                 if get_unread_log == 1:
                     self.u_log_count()
@@ -959,63 +922,50 @@ class GetHandler(BaseHTTPRequestHandler):
             elif f == 'v':            
                 self.wfile.write("AIS_GetDLLVersion() >> %s\n" % AISGetLibraryVersionStr())
                       
-            elif f == 'w':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'w':               
                 self.wfile.write(self.whitelist_read())
                 
-            elif f == 'b':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'b':                
                 self.blacklist_read()
 
-            elif f == 'W':                     
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'W':                                    
                 self.wfile.write(whitelist_write(white_list_write))                                  
 
-            elif f == 'B':            #black_list_write                      
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'B':            #black_list_write                                     
                 self.wfile.write(blacklist_write(black_list_write))                                 
 
-            elif f == 'L':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'L':                
                 self.wfile.write(TestLights(lights_choise))
                 
-            elif f == 'g':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'g':               
                 self.get_io_state()
-            elif f == 'G':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'G':               
                 self.lock_open()
-            elif f == 'y':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'y':               
                 self.relay_toogle()
                 
             
          
-            elif f == 'P':                
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'P':                               
                 self.wfile.write("input pass: %s\n" % set_def_pass)
                 self.wfile.write(self.set_default_password(set_def_pass)) 
                 
-            elif f == 'p': 
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'p':                 
                 self.wfile.write("input pass: %s\n" % new_pass)
                 self.wfile.write(self.change_password(new_pass))                       
 
             elif f == 'd':
                 self.wfile.write(AISGetDevicesForCheck()) 
           
-            elif f == 'f':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'f':               
                 self.wfile.write(AISGetVersion())
             
-            elif f == 'i':
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'i':              
                 self.wfile.write(AISGetVersion())
                 self.wfile.write(AISGetTime())
                 self.wfile.write(sys_get_timezone_info()+ "\n")
            
-            elif f == 'Q': 
-                self.wfile.write(ACTIVE_DEV_HEADLINE)
+            elif f == 'Q':                 
                 if device_list == SHOW_DEV_LIST:
                     self.print_available_devices()                
                 if device_type:
@@ -1041,11 +991,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(error_mess)
                 self.wfile.write(traceback.print_exc())
         
-        """
-        self.send_response(200)  # OK
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-        """
+     
        
         return
 
@@ -1092,53 +1038,6 @@ def AISGetLibraryVersionStr ():
     dll_ver.restype = c_char_p
     return dll_ver()
  
- #=========================== helper functions ======================= 
-def wr_status(funct_name,dl_status):
-    res = funct_name + ': {%d(%s): %s}\n' % (dl_status,hex(dl_status),E_ERROR_CODES[dl_status])
-    return res
-        
-# def dbg_action2str(action_value):    
-    # res = '[%d(%s):%s]' % (action_value,hex(action_value),E_CARD_ACTION[action_value])
-    # return res
-   
-# def dl_status2str(status):
-    # res = '[%d(%s):%s]' % (status,hex(status),E_ERROR_CODES[status])
-    # return res
-
-def dbg_action2str(action_value):
-    dbg_a = mySO.dbg_action2str
-    dbg_a.argtype = c_int
-    dbg_a.restype = c_char_p    
-    return dbg_a(action_value)
-
-def dl_status2str(status):
-    dl_s = mySO.dl_status2str
-    dl_s.argtype = DL_STATUS
-    dl_s.restype = c_char_p    
-    return dl_s(status)
-    
-def sys_get_timezone():
-    s_tz = mySO.sys_get_timezone
-    s_tz.restype = c_long
-    return s_tz()
-
-def sys_get_daylight():
-    s_dl  = mySO.sys_get_daylight
-    s_dl.restype = c_int
-    return s_dl()    
-
-def sys_get_dstbias():
-    s_dstb = mySO.sys_get_dstbias
-    s_dstb.restype = c_long
-    return s_dstb()  
-
-def sys_get_timezone_info():
-    s_tzinfo = mySO.sys_get_timezone_info
-    s_tzinfo.restype = c_char_p
-    return s_tzinfo()
-
-#====================================================================== 
-
 
 
 
