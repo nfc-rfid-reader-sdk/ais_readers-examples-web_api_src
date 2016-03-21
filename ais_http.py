@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.0.1.7 (build)  (lib:4.9.4)
+@version: 2.0.1.8 (build)  (lib:4.9.4)
  
 """
 
@@ -20,8 +20,10 @@ from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from ctypes import *
 from socket import *
 
+
 from shell.ais_shell import *
 from constants import *
+
 
 
 
@@ -57,8 +59,7 @@ class GetHandler(BaseHTTPRequestHandler):
             f             = ''.join(pq[FUNCTION])             
             seconds       = int(''.join(pq[RTE]))
             device        = ''.join(pq[DEVICE])
-           
-          
+                     
             if device == None or device == '':
                 dev.hnd  = HND_LIST[0]
                 device   = dev.hnd          
@@ -211,7 +212,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(AISGetTime())
                 self.wfile.write(sys_get_timezone_info()+ "\n")
            
-            elif f == 'Q': 
+            elif f == 'Q':             
                 if edit_list_choise == AVAILABLE_DEVICES :            
                     self.wfile.write(edit_device_list(1))
                 elif edit_list_choise == ACTUAL_LIST:
@@ -284,6 +285,7 @@ shut_event = threading.Event()
 
 if __name__ == '__main__': 
     global httpd 
+    
     # global mySO
     # mySO = GetPlatformLib() 
     init()     

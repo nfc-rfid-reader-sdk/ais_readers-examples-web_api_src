@@ -1,6 +1,6 @@
 
 
-LIB_PATH     = '/shell/lib/testing/ver.4.9.4/'
+#LIB_PATH     = '/shell/lib/testing/ver.4.9.4/'
 
 THD_SLEEP = .7
 SERV_JOIN = 3.0 #timeout

@@ -117,13 +117,13 @@
 	<tr>
 		<td rowspan=3>Q</td>
 		<td rowspan=3>Edit device list for checking </td>
-		<td colspan=4" style="text-align:center";>&nbsp <input type = "radio" name="edit_list" value=1 style="cursor:pointer;" checked="checked">Known device types
-                        &nbsp <input type = "radio" name="edit_list" value=2 style="cursor:pointer;">Actual list 
-						&nbsp <input type = "radio" name="edit_list" value=3 style="cursor:pointer;" >Clear list
+		<td colspan=4" style="text-align:center";>&nbsp <input type = "radio" name="edit_list" value='available_devices' style="cursor:pointer;" checked="checked">Known device types
+                        &nbsp <input type = "radio" name="edit_list" value='actual_list' style="cursor:pointer;">Actual list 
+						&nbsp <input type = "radio" name="edit_list" value='clear_list' style="cursor:pointer;" >Clear list
 	    </td>
 	</tr>
 		<td colspan=2>
-		&nbsp <input type = "radio" name="edit_list" value=4 style="cursor:pointer;"/>Add device for check 
+		&nbsp <input type = "radio" name="edit_list" value='add_device' style="cursor:pointer;"/>Add device for check 
 		</td>
 	<td rowspan=2 colspan=2 style="text-align:center";>
 		&nbsp &nbsp Enter device type:<input type="text" name="device_type" size="5"/>
@@ -131,7 +131,7 @@
         </td>
 	<tr>
 		<td colspan=2>
-		&nbsp <input type = "radio" name="edit_list" value=5 style="cursor:pointer;"/>Erase device from list
+		&nbsp <input type = "radio" name="edit_list" value='erase_device' style="cursor:pointer;"/>Erase device from list
         </td>						
 	</tr>				
 </table>
