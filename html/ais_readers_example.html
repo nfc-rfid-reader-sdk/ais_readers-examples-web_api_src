@@ -2,7 +2,6 @@
 <head>
 <title>AIS NFC READERS HTML EXAMPLE </title>
 <meta charset = "UTF-8">
-<link rel="stylesheet" href="myCSS.css"> 
 <style>
     #tbl-td {
 				border-style:none;
@@ -34,9 +33,7 @@
 </head>
  
 <body>
-<!--
-<form method="post" action="aisreaderbbb.php">
--->
+
 <form method='post' action="http://localhost:8080/" autocomplete="on">
 <table style="width:70%">
 	<th colspan="6">AIS NFC READERS HTML EXAMPLE &nbsp<a href= " http://www.d-logic.net/nfc-rfid-reader-sdk/"> http://www.d-logic.net/nfc-rfid-reader-sdk/</th>
@@ -118,24 +115,30 @@
 		<td>Devices Information</td>
 	</tr>
 	<tr>
-		<td>Q</td>
-		<td>Edit device list for checking >></td>
-		<td colspan="4">Show device list :&nbsp<select name="device_list" style="cursor:pointer;">
-												<option value="not_show">Not Show</value>
-												<option value="show">Show</value>
-											    </select>		
-		    &nbsp Device type:<input type="text" name="device_type" size="5"/>
-		    &nbsp Device bus ID:<input type="text" name="device_id" size="5"/>		
-		</td>
+		<td rowspan=3>Q</td>
+		<td rowspan=3>Edit device list for checking </td>
+		<td colspan=4" style="text-align:center";>&nbsp <input type = "radio" name="edit_list" value=1 style="cursor:pointer;" checked="checked">Known device types
+                        &nbsp <input type = "radio" name="edit_list" value=2 style="cursor:pointer;">Actual list 
+						&nbsp <input type = "radio" name="edit_list" value=3 style="cursor:pointer;" >Clear list
+	    </td>
 	</tr>
-	
+		<td colspan=2>
+		&nbsp <input type = "radio" name="edit_list" value=4 style="cursor:pointer;"/>Add device for check 
+		</td>
+	<td rowspan=2 colspan=2 style="text-align:center";>
+		&nbsp &nbsp Enter device type:<input type="text" name="device_type" size="5"/>
+		    &nbsp &nbsp Enter device ID:<input type="text" name="device_id" size="5"/>
+        </td>
+	<tr>
+		<td colspan=2>
+		&nbsp <input type = "radio" name="edit_list" value=5 style="cursor:pointer;"/>Erase device from list
+        </td>						
+	</tr>				
 </table>
 <br/>
-device:<input type="text" maxlength="2" name="device" size="5" value="1"/>
-<input type="text" width="1px" name="get_function" size="5"/>
+Enter device:<input type="text" maxlength="2" name="device" size="3" value="1"/>
+<input type="text" width="1px" name="get_function" size="3"/>
 <input type="submit" value="GET FUNCTION "/>
-
-
 </form>
 </body>
 </html>
