@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<head>
+<title>AIS NFC READERS HTML EXAMPLE </title>
+<meta charset = "UTF-8">
+<style>
+    #tbl-td {
+				border-style:none;
+			}
+			
+	table,td {
+				border:1px solid black;
+				border-collapse:collapse;
+			 }
+			 
+	th 		{
+				background-color:#80c1ff;
+			}
+			
+	#tr01 	{
+				background-color:#d6d6c2
+				border:1pc solid black;
+				font-familly:verdana,arial;
+				font-weight:bold;	
+			}
+	.info_font {
+			    font-weight:bold;  
+			    font-style:italic;
+			    font-size:small;
+			    color:#ffcc66;
+			  }
+			
+</style>
+</head>
+ 
+<body>
+
+<form method='post' action="http://localhost:8080/" autocomplete="on">
+<table style="width:70%">
+	<th colspan="6">AIS NFC READERS HTML EXAMPLE &nbsp<a href= " http://www.d-logic.net/nfc-rfid-reader-sdk/"> http://www.d-logic.net/nfc-rfid-reader-sdk/</th>
+	<tr>
+		<td>q</td>
+		<td>List devices</td>
+		<td>o</td>
+		<td>Open devices</td>	
+		<td>c</td>
+		<td>Close device</td>
+	</tr>	
+	<tr>
+		<td>d</td>
+		<td>Get devices count</td>	
+		<td>t</td>
+		<td>Get Time</td>	
+		<td>T</td>
+		<td>Set Time</td>
+	</tr>
+	<tr>
+		<td>E</td>
+		<td>Real Time Events&nbsp<input type="text" name="rte" size="3" value="10"/></td>	
+		<td>P</td>
+		<td>Set application password&nbsp<input type="text" name="default_app_pass" size="5" width="4"/></td>
+		<td>p</td>
+		<td>Change device password&nbsp<input type="text" name="new_pass" size="5"/></td>
+	</tr>
+    <tr>	
+		<td>l</td>
+		<td>Get log</td>
+		<td>n</td>
+		<td>Get log by Index :&nbspS<input type="text" name="start_index" size="3"/>
+		E<input type="text" name="end_index" size="3"/>
+		</td>	
+		<td>N</td>
+		<td>Get log by Time: S<input type="text" name="start_time" size="15"/>
+		E<input type="text" name="end_time" size="15"/>
+		</td>
+	</tr>
+	<tr>
+		<td>u</td>
+		<td>Get unread log&nbsp <select name="unread_log">
+								<option value="1">Count</value>
+								<option value="2">Get</value>
+								<option value="3">Ack</value>
+								</select>
+		</td>	
+		<td>w</td>
+		<td>White-list Read</td>	
+		<td>W</td>
+		<td>White-list Write&nbsp<input type="text" name="white_list_write" size="15"/></td></td>
+	</tr>
+	<tr>
+		<td>b</td>
+		<td>Black-list Read</td>	
+		<td>B</td>
+		<td>Black-list Write&nbsp<input type="text" name="black_list_write" size="15"/></td>	
+		<td>L</td>
+		<td><input type="radio" name='lights' value='red_master' style="cursor:pointer;" checked="checked">Red Master
+			<input type="radio" name='lights' value='green_master' style="cursor:pointer;">Green Master
+		    <input type="radio" name='lights' value='red_slave' style="cursor:pointer;" >Red Slave
+		    <input type="radio" name='lights' value='green_slave' style="cursor:pointer;">Green Slave
+		</td>
+	</tr>	
+	<tr>
+		<td>g</td>
+		<td>Get IO state</td>
+		<td>G</td>
+		<td>Open gate/lock</td>
+		<td>y</td>
+		<td>Relay toggle state</td>
+	</tr>
+	<tr>
+		<td>v</td>
+		<td>Get Library version</td>	
+		<td>f</td>
+		<td>Get Firmware version</td>	
+		<td>i</td>
+		<td>Devices Information</td>
+	</tr>
+	<tr>
+		<td rowspan=3>Q</td>
+		<td rowspan=3>Edit device list for checking </td>
+		<td colspan=4" style="text-align:center";>&nbsp <input type = "radio" name="edit_list" value=1 style="cursor:pointer;" checked="checked">Known device types
+                        &nbsp <input type = "radio" name="edit_list" value=2 style="cursor:pointer;">Actual list 
+						&nbsp <input type = "radio" name="edit_list" value=3 style="cursor:pointer;" >Clear list
+	    </td>
+	</tr>
+		<td colspan=2>
+		&nbsp <input type = "radio" name="edit_list" value=4 style="cursor:pointer;"/>Add device for check 
+		</td>
+	<td rowspan=2 colspan=2 style="text-align:center";>
+		&nbsp &nbsp Enter device type:<input type="text" name="device_type" size="5"/>
+		    &nbsp &nbsp Enter device ID:<input type="text" name="device_id" size="5"/>
+        </td>
+	<tr>
+		<td colspan=2>
+		&nbsp <input type = "radio" name="edit_list" value=5 style="cursor:pointer;"/>Erase device from list
+        </td>						
+	</tr>
+   
+</table>
+<br/>
+Enter device:<input type="text" maxlength="2" name="device" size="3" value="1"/>
+<input type="text" width="1px" name="get_function" size="3"/>
+<input type="submit" value="GET FUNCTION "/>
+</form>
+</body>
+</html>
