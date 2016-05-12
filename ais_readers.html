@@ -35,7 +35,7 @@
 <body>
 
 <form method='post' action="http://localhost:8080/" autocomplete="on">
-<table style="width:70%">
+<table style="width:90%">
 	<th colspan="6">AIS NFC READERS HTML EXAMPLE &nbsp<a href= " http://www.d-logic.net/nfc-rfid-reader-sdk/"> http://www.d-logic.net/nfc-rfid-reader-sdk/</th>
 	<tr>
 		<td>q</td>
@@ -54,7 +54,7 @@
 		<td>Set Time</td>
 	</tr>
 	<tr>
-		<td>E</td>
+		<td>r</td>
 		<td>Real Time Events&nbsp<input type="text" name="rte" size="3" value="10"/></td>	
 		<td>P</td>
 		<td>Set application password&nbsp<input type="text" name="default_app_pass" size="5" width="4"/></td>
@@ -107,13 +107,37 @@
 		<td>Relay toggle state</td>
 	</tr>
 	<tr>
-		<td>v</td>
-		<td>Get Library version</td>	
-		<td>f</td>
-		<td>Get Firmware version</td>	
+		<td>E</td>
+		<td>EEPROM LOCK</td>
+		<td>e</td>
+		<td>EEPROM UNLOCK</td>
+		
+	</tr>
+	<tr>		
+		<td>F</td>		
+		<td>Firmware update</td>
+		<td colspan=2>&nbsp&nbspEnter full firmware BIN file name:</td>
+		<td colspan=3><input type="text" name="BIN_fname" size="80%" />	
+		</td>
+	</tr>
+	<tr>
+		<td>s</td>
+		<td>Settings read from device to file</td>
+		<td colspan=2>&nbsp&nbspEnter to config file name:</td>
+		<td colspan=3><input type="text" name="Config_file_RD" size="80%"/>
+		</td>
+	</tr>
+	<tr>
+		<td>S</td>
+		<td>Settings read from file to device</td>
+		<td colspan=2>&nbsp&nbspEnter to config file name:</td>
+		<td colspan=3><input type="text" name="Config_file_WR" size="80%"/></td>
+	</tr>
+	<tr>
 		<td>i</td>
 		<td>Devices Information</td>
 	</tr>
+	
 	<tr>
 		<td rowspan=3>Q</td>
 		<td rowspan=3>Edit device list for checking </td>

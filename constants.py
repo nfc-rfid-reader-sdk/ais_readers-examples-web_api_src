@@ -1,6 +1,6 @@
 
 
-#LIB_PATH     = '/shell/lib/testing/ver.4.9.4/'
+
 
 THD_SLEEP = .7
 SERV_JOIN = 3.0 #timeout
@@ -31,6 +31,11 @@ ADD_DEVICE        = '4'
 ERASE_DEVICE      = '5'
 DEVICE_TYPE       = 'device_type'
 DEVICE_ID         = 'device_id'
+BIN_FNAME         = 'BIN_fname'
+CONFIG_FILE_READ  = 'Config_file_RD'
+CONFIG_FILE_WRITE = 'Config_file_WR'
+
+
 
 #http
 HTTP_SERVER_NAME = ''

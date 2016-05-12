@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.0.2.0   (lib:4.9.6)
+@version: 2.1.0.0   (lib:4.9.11)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -24,9 +24,6 @@ from socket import *
 
 from shell.ais_shell import *
 from constants import *
-
-
-
 
 def http_request(path, post_attrib):
     try:
@@ -92,16 +89,16 @@ class GetHandler(BaseHTTPRequestHandler):
             self.wfile.close()
             return
         
-        
-        if f == "S":
-            c =  open(os.curdir+os.sep+"bbb_logs.log")
-            self.send_response(200)
-            self.send_header("Content-type","text/json")
-            self.end_headers()
-            self.wfile.write(c.read())
-            c.close() 
-            self.wfile.close()                
-            return
+        if GetBaseName() == AIS_MAIN:
+            if f == "S":
+                c =  open(os.curdir+os.sep+"bbb_logs.log")
+                self.send_response(200)
+                self.send_header("Content-type","text/json")
+                self.end_headers()
+                self.wfile.write(c.read())
+                c.close() 
+                self.wfile.close()                
+                return
 
 
         
@@ -151,11 +148,11 @@ class GetHandler(BaseHTTPRequestHandler):
         if pq[DEVICE_ID] != None:
             device_id  = ''.join(pq[DEVICE_ID])
         
-       
-       
+#         if pq[BIN_FNAME] != None:            
+#             bin_fname = ''.join(pq[BIN_FNAME])
+#             
+         
         
-            
-       
         
         if f == 'q':                
             self.wfile.write(GetListInformation())
@@ -179,7 +176,7 @@ class GetHandler(BaseHTTPRequestHandler):
             self.wfile.write(sys_get_timezone_info()+ "\n")
             self.wfile.write(AISSetTime())
         
-        elif f == 'E':
+        elif f == 'r':
             pass                
             stop_time = c_uint64()
             stop_time = time.time() + seconds #10
@@ -280,6 +277,26 @@ class GetHandler(BaseHTTPRequestHandler):
             else:
                 self.wfile.write("")
        
+        elif f == 'E':
+            self.wfile.write(ee_lock())
+        
+        elif f == 'e':
+            self.wfile.write(ee_unlock())
+       
+        elif f == 'F': 
+            bin_fname = ''.join(pq[BIN_FNAME])          
+            self.wfile.write(fw_update(fw_name=bin_fname))
+            
+        elif f == 's':
+            conf_file_rd = ''.join(pq[CONFIG_FILE_READ])
+            self.wfile.write(config_file_rd(fname=conf_file_rd))
+            
+        elif f == 'S':
+            conf_file_wr = ''.join(pq[CONFIG_FILE_WRITE])
+            self.wfile.write(config_file_wr(fname=conf_file_wr))
+       
+       
+       
         elif f == 'x':
             self.wfile.write("\nServer stopped !\nClose program !\n")            
             shut_event.set()
@@ -323,7 +340,8 @@ def handler_server():
 def init():   
     print AISGetLibraryVersionStr() 
     global httpd   
-    dev_list()     
+    #dev_list() 
+    list_device()    
     httpd = HTTPServer((HTTP_SERVER_NAME,HTTP_SERVER_PORT),GetHandler) 
     httpd.socket.setsockopt(SOL_SOCKET,SO_REUSEADDR,1) 
     RunAll() 
@@ -335,8 +353,6 @@ shut_event = threading.Event()
 
 if __name__ == '__main__': 
     global httpd     
-    # global mySO
-    # mySO = GetPlatformLib() 
     init()     
     
         
