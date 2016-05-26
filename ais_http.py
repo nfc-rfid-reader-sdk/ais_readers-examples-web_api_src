@@ -27,8 +27,11 @@ from constants import *
 
 def http_request(path, post_attrib):
     try:
+        #req_header = ("Content-type", "application/x-www-form-urlencoded")
+        #req = requests.get(path,params=post_attrib,headers=req_header)
+        
         req = urllib2.Request(path, post_attrib)        
-        req.add_header("Content-type", "application/x-www-form-urlencoded")
+        req.add_header("Content-type", "application/x-www-form-urlencoded")       
         page = urllib2.urlopen(req).read()
         return page
     except Exception as e:
@@ -74,24 +77,24 @@ class GetHandler(BaseHTTPRequestHandler):
         seconds       = int(''.join(pq[RTE]))
         device        = ''.join(pq[DEVICE])                    
         
-      
-        if f == "D":               
-            self.send_response(200)
-            self.send_header("Content-type","text/html")
-            self.end_headers()
-            c =  open(os.curdir+os.sep+"bbb_logs.log")
-            self.wfile.write("<html><head><title>Read Debug Log</title></head><body>")
-            for line in c:                    
-                l = line.encode("utf-8") 
-                self.wfile.write("<p>%s</p>" % l)                                   
-            c.close()
-            self.wfile.write("</body></html>")
-            self.wfile.close()
-            return
+        if GetBaseName() == AIS_MAIN:
+            if f == "D":               
+                self.send_response(200)
+                self.send_header("Content-type","text/html")
+                self.end_headers()
+                c =  open(os.curdir+os.sep+BBB_DEBUG_LOG)
+                self.wfile.write("<html><head><title>Read Debug Log</title></head><body>")
+                for line in c:                    
+                    l = line.encode("utf-8") 
+                    self.wfile.write("<p>%s</p>" % l)                                   
+                c.close()
+                self.wfile.write("</body></html>")
+                self.wfile.close()
+                return
         
         if GetBaseName() == AIS_MAIN:
-            if f == "S":
-                c =  open(os.curdir+os.sep+"bbb_logs.log")
+            if f == "SD":
+                c =  open(os.curdir+os.sep+BBB_DEBUG_LOG)
                 self.send_response(200)
                 self.send_header("Content-type","text/json")
                 self.end_headers()
