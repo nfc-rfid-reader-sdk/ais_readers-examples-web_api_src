@@ -2,9 +2,12 @@
 
 
 
-THD_SLEEP = .7
-SERV_JOIN = 3.0 #timeout
+THD_SLEEP         = .7
+SERV_JOIN         = 3.0 #timeout
 URL_ERROR_MESSAGE = "INPUT ERROR IN URL QUERY STRING !"
+
+
+
 #url_query_string
 DEVICE            = 'device'
 START_INDEX       = 'start_index'
