@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.1.0.0   (lib:4.9.11)
+@version: 2.1.1   (lib:4.9.11)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -42,11 +42,9 @@ class GetHandler(BaseHTTPRequestHandler):
    
     global url_query
     
-    def do_GET(self):
-        pass
-        try: 
-           
-            f = open(os.curdir+os.sep+"ais_readers.html")
+    def do_GET(self):        
+        try:            
+            f = open(os.curdir + os.sep + "ais_readers.html")
             self.send_response(200)
             self.send_header("Content-type","text/html")
             self.end_headers()
@@ -58,9 +56,8 @@ class GetHandler(BaseHTTPRequestHandler):
         return    
     
     def do_POST(self):
-        global url_query
-        pass                
-        dev              = DEV_HND       
+        global url_query                      
+        dev = DEV_HND       
         ctype, pdict = cgi.parse_header(self.headers['content-type'])
         if ctype == 'multipart/form-data':
             pq = cgi.parse_multipart(self.rfile, pdict)
@@ -82,7 +79,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header("Content-type","text/html")
                 self.end_headers()
-                c =  open(os.curdir+os.sep+BBB_DEBUG_LOG)
+                c =  open(os.curdir + os.sep + BBB_DEBUG_LOG)
                 self.wfile.write("<html><head><title>Read Debug Log</title></head><body>")
                 for line in c:                    
                     l = line.encode("utf-8") 
@@ -94,7 +91,7 @@ class GetHandler(BaseHTTPRequestHandler):
         
         if GetBaseName() == AIS_MAIN:
             if f == "SD":
-                c =  open(os.curdir+os.sep+BBB_DEBUG_LOG)
+                c =  open(os.curdir + os.sep + BBB_DEBUG_LOG)
                 self.send_response(200)
                 self.send_header("Content-type","text/json")
                 self.end_headers()
@@ -183,12 +180,12 @@ class GetHandler(BaseHTTPRequestHandler):
             pass                
             stop_time = c_uint64()
             stop_time = time.time() + seconds #10
-            dev       = DEV_HND
+            dev = DEV_HND
             self.wfile.write("Wait for RTE for %d sec ...\n" % seconds)       
             while (time.ctime(time.time()) < time.ctime(stop_time)) :
                 for hnd in HND_LIST:
                     dev.hnd = hnd            
-                    r,rte = MainLoop()                       
+                    r, rte = MainLoop()                       
                     self.wfile.write(rte)
                 time.sleep(THD_SLEEP)     
             self.wfile.write ("End RTE listen")    

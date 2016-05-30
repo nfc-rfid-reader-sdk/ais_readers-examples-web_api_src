@@ -3,12 +3,13 @@
 
 
 THD_SLEEP         = .7
-SERV_JOIN         = 3.0 #timeout
+SERV_JOIN         = 1.0 #timeout
 URL_ERROR_MESSAGE = "INPUT ERROR IN URL QUERY STRING !"
 
-
+BBB_DEBUG_LOG     = 'bbb_debug_log.log'
 
 #url_query_string
+
 DEVICE            = 'device'
 START_INDEX       = 'start_index'
 END_INDEX         = 'end_index'
