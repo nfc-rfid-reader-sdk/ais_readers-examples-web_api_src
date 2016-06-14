@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.1.2   (lib:4.9.11)
+@version: 2.1.3   (lib:4.9.11)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -99,12 +99,21 @@ class GetHandler(BaseHTTPRequestHandler):
                     return
 
 
-            if device == None or device == "":
-                dev.hnd  = HND_LIST[0]
-                #device   = dev.idx          
-            else:                                            
+            # if device == None or device == "":
+                # dev.hnd  = HND_LIST[0]
+                # device   = dev.idx          
+            # else:                                            
+                # dev.hnd = HND_LIST[int(device) -1]
+                      
+            
+            if not device.isdigit():                
+                dev.hnd = HND_LIST[0]
+            elif int(device) > len(HND_LIST):
+                self.wfile.write("dev[%s] : NO DEVICE FOUND " % device)
+                return
+            else:
                 dev.hnd = HND_LIST[int(device) -1]
-              
+             
                                                                          
             if pq[START_INDEX] != None or pq[END_INDEX] != None:
                start_index = (''.join(pq[START_INDEX]))
@@ -182,15 +191,15 @@ class GetHandler(BaseHTTPRequestHandler):
                 
                   
             elif f == 'l':                         
-                self.wfile.write(log_get())
+                self.wfile.write(log_get(dev.hnd))
                 
            
             elif f == 'n':                                                          
-                self.wfile.write(log_by_index(int(start_index),int(end_index)))               
+                self.wfile.write(log_by_index(int(start_index), int(end_index), dev.hnd))               
                
                 
             elif f == 'N':                                                       
-                self.wfile.write(log_by_time(int(start_time),int(end_time)))  
+                self.wfile.write(log_by_time(int(start_time), int(end_time), dev.hnd))  
                 
                 
             elif f == 'u':                
