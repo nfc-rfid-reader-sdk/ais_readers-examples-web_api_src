@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.1.3   (lib:4.9.11)
+@version: 2.1.4   (lib:4.9.11)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -105,10 +105,12 @@ class GetHandler(BaseHTTPRequestHandler):
             # else:                                            
                 # dev.hnd = HND_LIST[int(device) -1]
                       
-            
-            if not device.isdigit():                
+            if len(HND_LIST) == 0:
+                self.wfile.write(">> NO DEVICES FOUND " )
+                return
+            if not device.isdigit():                 
                 dev.hnd = HND_LIST[0]
-            elif int(device) > len(HND_LIST):
+            elif int(device) > len(HND_LIST) or int(device) == 0:
                 self.wfile.write("dev[%s] : NO DEVICE FOUND " % device)
                 return
             else:
