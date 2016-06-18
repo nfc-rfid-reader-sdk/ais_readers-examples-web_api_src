@@ -9,7 +9,9 @@ URL_ERROR_MESSAGE = "INPUT ERROR IN URL QUERY STRING !"
 #BBB_DEBUG_LOG     = 'bbb_debug_log.log'
 
 #url_query_string
-
+LOG_DIR           = 'log_dir'
+READ_DEBUG_LOG    = 'read_debug_log'
+SAVE_DEBUG_LOG    = 'save_debug_log'
 DEVICE            = 'device'
 START_INDEX       = 'start_index'
 END_INDEX         = 'end_index'

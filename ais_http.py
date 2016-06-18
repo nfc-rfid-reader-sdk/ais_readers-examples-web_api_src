@@ -68,16 +68,21 @@ class GetHandler(BaseHTTPRequestHandler):
             else:
                 pq = {}
          
-            f             = ''.join(pq[FUNCTION])             
-            seconds       = int(''.join(pq[RTE]))
-            device        = ''.join(pq[DEVICE])                    
+            f  = ''.join(pq[FUNCTION])             
+            seconds = int(''.join(pq[RTE]))
+            device  = ''.join(pq[DEVICE])                    
+            log_dir = ''.join(pq[LOG_DIR])
+            read_deb_log = ''.join(pq[READ_DEBUG_LOG])
+            save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
+         
             
             if GetBaseName() == AIS_MAIN:
                 if f == "D":               
                     self.send_response(200)
                     self.send_header("Content-type","text/html")
                     self.end_headers()
-                    c =  open(os.curdir + os.sep + BBB_DEBUG_LOG)
+                    #c =  open(os.curdir + os.sep + BBB_DEBUG_LOG)
+                    c = open(os.getcwd() + os.sep + log_dir + os.sep +  read_deb_log)
                     self.wfile.write("<html><head><title>Read Debug Log</title></head><body>")
                     for line in c:                    
                         l = line.encode("utf-8") 
@@ -88,14 +93,14 @@ class GetHandler(BaseHTTPRequestHandler):
                     return
             
             if GetBaseName() == AIS_MAIN:
-                if f == "SD":
-                    c =  open(os.curdir + os.sep + BBB_DEBUG_LOG)
+                if f == "SD":                                                                                             
+                    c = open(os.getcwd() + os.sep + log_dir + os.sep +  save_deb_log)                                                       
                     self.send_response(200)
                     self.send_header("Content-type","text/json")
                     self.end_headers()
                     self.wfile.write(c.read())
                     c.close() 
-                    self.wfile.close()                
+                    self.wfile.close()                                       
                     return
 
 
@@ -308,7 +313,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 
         except (Exception) as error_mess:                    
             self.wfile.write(error_mess)
-            self.wfile.write(traceback.print_exc())
+           # self.wfile.write(traceback.print_exc())
         
         
 def RunAll():   
