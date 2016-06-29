@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.1.4   (lib:4.9.11)
+@version: 2.1.5   (lib:4.9.11)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -238,7 +238,8 @@ class GetHandler(BaseHTTPRequestHandler):
             elif f == 'y':               
                 self.wfile.write(relay_toogle())
           
-            elif f == 'P':                               
+            elif f == 'P':
+                global PASS
                 self.wfile.write("Actual application password is :%s\n" % PASS)
                 if  len(set_def_pass) == 0:
                     self.wfile.write("Patch - new pass = default pass\n")
@@ -247,6 +248,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(password_set_default(set_def_pass)) 
                 
             elif f == 'p':
+                global PASS
                 self.wfile.write("Old password is actual application password: %s\n" % PASS)           
                 self.wfile.write("New password for units ( and application ): %s\n" % new_pass)
                 if  len(new_pass) == 0:
