@@ -34,7 +34,7 @@
  
 <body>
 
-<form method='post' action="http://192.168.1.163:8080/" autocomplete="on">  <!--kasnije vrati na IP adresu za bbb -->
+<form method='post' action="http://localhost:8080/" autocomplete="on">  <!--kasnije vrati na IP adresu za bbb -->
 <table style="width:90%">
 	<th colspan="6">AIS NFC READERS HTML EXAMPLE &nbsp<a href= " http://www.d-logic.net/nfc-rfid-reader-sdk/"> http://www.d-logic.net/nfc-rfid-reader-sdk/</th>
 	<tr>
@@ -157,21 +157,7 @@
 		&nbsp <input type = "radio" name="edit_list" value=5 style="cursor:pointer;"/>Erase device from list
         </td>						
 	</tr>
-	<tr>
-		<td colspan=7></td>
-	</tr>
-    <tr>	    
-	    <td colspan=6>Directory for debug log :&nbsp <input type="text" size=20 name="log_dir" value="debug_log"/> 
-		</td> 
-	</tr>
-	<tr>
-		<td>D</td>
-		<td>Read Debug Log : &nbsp <input type="text" size=35 name="read_debug_log"/></td>
-		<td>SD</td>					
-		<td colspan=3>Save Debug Log :&nbsp <input type="text" size=35 name="save_debug_log"/>
-		&nbsp * bbb_debug_log20160617.log
-		</td>		  
-	</tr>
+	
 </table>
 <br/>
 Enter device:<input type="text" maxlength="2" name="device" size="3" />
