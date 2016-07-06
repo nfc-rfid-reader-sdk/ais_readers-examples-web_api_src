@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.1.5   (lib:4.9.11)
+@version: 2.1.6   (lib:4.9.11)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -68,19 +68,22 @@ class GetHandler(BaseHTTPRequestHandler):
             else:
                 pq = {}
          
-            f  = ''.join(pq[FUNCTION])             
+            f = ''.join(pq[FUNCTION])             
             seconds = int(''.join(pq[RTE]))
-            device  = ''.join(pq[DEVICE])                    
-            log_dir = ''.join(pq[LOG_DIR])
-            read_deb_log = ''.join(pq[READ_DEBUG_LOG])
-            save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
-         
+            device = ''.join(pq[DEVICE])                    
+           
+            # log_dir = ''.join(pq[LOG_DIR]) #CUR_DIR?
+            # read_deb_log = ''.join(pq[READ_DEBUG_LOG])
+            # save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
             
             if GetBaseName() == AIS_MAIN:
+                log_dir = ''.join(pq[LOG_DIR]) #CUR_DIR?
+                read_deb_log = ''.join(pq[READ_DEBUG_LOG])
+                save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
                 if f == "D":               
                     self.send_response(200)
                     self.send_header("Content-type","text/html")
-                    self.end_headers()
+                    self.end_headers()                    
                     #c =  open(os.curdir + os.sep + BBB_DEBUG_LOG)
                     c = open(os.getcwd() + os.sep + log_dir + os.sep +  read_deb_log)
                     self.wfile.write("<html><head><title>Read Debug Log</title></head><body>")
@@ -93,8 +96,11 @@ class GetHandler(BaseHTTPRequestHandler):
                     return
             
             if GetBaseName() == AIS_MAIN:
-                if f == "SD":                                                                                             
-                    c = open(os.getcwd() + os.sep + log_dir + os.sep +  save_deb_log)                                                       
+                log_dir = ''.join(pq[LOG_DIR]) #CUR_DIR?
+                read_deb_log = ''.join(pq[READ_DEBUG_LOG])
+                save_deb_log = ''.join(pq[SAVE_DEBUG_LOG]) 
+                if f == "SD":                  
+                    c = open(os.path.join(os.curdir,os.sep,log_dir,save_debug_log))
                     self.send_response(200)
                     self.send_header("Content-type","text/json")
                     self.end_headers()
