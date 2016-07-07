@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.1.6   (lib:4.9.11)
+@version: 2.1.7   (lib:4.9.11)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -71,16 +71,22 @@ class GetHandler(BaseHTTPRequestHandler):
             f = ''.join(pq[FUNCTION])             
             seconds = int(''.join(pq[RTE]))
             device = ''.join(pq[DEVICE])                    
-           
-            # log_dir = ''.join(pq[LOG_DIR]) #CUR_DIR?
-            # read_deb_log = ''.join(pq[READ_DEBUG_LOG])
-            # save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
+        
             
             if GetBaseName() == AIS_MAIN:
-                log_dir = ''.join(pq[LOG_DIR]) #CUR_DIR?
+                log_dir = ''.join(pq[LOG_DIR]) 
                 read_deb_log = ''.join(pq[READ_DEBUG_LOG])
                 save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
-                if f == "D":               
+                if f == "SD":                  
+                    c = open(os.path.join(os.curdir, os.sep, log_dir, save_debug_log))
+                    self.send_response(200)
+                    self.send_header("Content-type","text/json")
+                    self.end_headers()
+                    self.wfile.write(c.read())
+                    c.close() 
+                    self.wfile.close()                                       
+                    return
+                elif f == "D":               
                     self.send_response(200)
                     self.send_header("Content-type","text/html")
                     self.end_headers()                    
@@ -94,27 +100,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write("</body></html>")
                     self.wfile.close()
                     return
-            
-            if GetBaseName() == AIS_MAIN:
-                log_dir = ''.join(pq[LOG_DIR]) #CUR_DIR?
-                read_deb_log = ''.join(pq[READ_DEBUG_LOG])
-                save_deb_log = ''.join(pq[SAVE_DEBUG_LOG]) 
-                if f == "SD":                  
-                    c = open(os.path.join(os.curdir,os.sep,log_dir,save_debug_log))
-                    self.send_response(200)
-                    self.send_header("Content-type","text/json")
-                    self.end_headers()
-                    self.wfile.write(c.read())
-                    c.close() 
-                    self.wfile.close()                                       
-                    return
-
-
-            # if device == None or device == "":
-                # dev.hnd  = HND_LIST[0]
-                # device   = dev.idx          
-            # else:                                            
-                # dev.hnd = HND_LIST[int(device) -1]
+        
                       
             if len(HND_LIST) == 0:
                 self.wfile.write(">> NO DEVICES FOUND " )
