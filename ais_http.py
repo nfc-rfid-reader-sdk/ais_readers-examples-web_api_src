@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 2.1.7   (lib:4.9.11)
+@version: 2.1.8   (lib:4.9.11)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -78,7 +78,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 read_deb_log = ''.join(pq[READ_DEBUG_LOG])
                 save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
                 if f == "SD":                  
-                    c = open(os.path.join(os.curdir, os.sep, log_dir, save_debug_log))
+                    c = open(os.path.join(os.curdir, os.sep, log_dir, save_deb_log))
                     self.send_response(200)
                     self.send_header("Content-type","text/json")
                     self.end_headers()
