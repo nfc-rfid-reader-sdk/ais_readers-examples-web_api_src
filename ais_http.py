@@ -353,7 +353,7 @@ def RunAll():
         try:                  
             if serv.isAlive():            
                 serv.join(timeout = SERV_JOIN)                             
-        except (KeyboardInterrupt,SystemExit,Exception) as e:
+        except (KeyboardInterrupt, SystemExit, Exception) as e:
             httpd.server_close()
             print '\nServer stopped\nProgram close',e
             shut_event.set()
