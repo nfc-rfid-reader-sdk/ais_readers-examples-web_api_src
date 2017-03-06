@@ -57,7 +57,7 @@ class GetHandler(BaseHTTPRequestHandler):
     
     def do_POST(self):
         try:    
-            global url_query                      
+            global url_query, edit_list_choise
             dev = DEV_HND       
             ctype, pdict = cgi.parse_header(self.headers['content-type'])
             if ctype == 'multipart/form-data':
@@ -68,8 +68,9 @@ class GetHandler(BaseHTTPRequestHandler):
             else:
                 pq = {}
          
-            f = ''.join(pq[FUNCTION])             
-            seconds = int(''.join(pq[RTE]))
+            f = ''.join(pq[FUNCTION])      
+            # if pq[RTE] != None:        
+            #     seconds = int(''.join(pq[RTE]))
             device = ''.join(pq[DEVICE])                    
         
             
@@ -101,11 +102,38 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write("</body></html>")
                     self.wfile.close()
                     return
-        
-                      
+
+            if pq[DEVICE_TYPE] != None:
+                device_type = ''.join(pq[DEVICE_TYPE])
+
+            if pq[DEVICE_ID] != None:
+                device_id = ''.join(pq[DEVICE_ID])
+
+
+            if pq[EDIT_LIST] != None:
+                edit_list_choise = ''.join(pq[EDIT_LIST])
+
+
+            if f == 'Q':
+                if edit_list_choise == AVAILABLE_DEVICES :
+                    self.wfile.write(edit_device_list(1))
+                elif edit_list_choise == ACTUAL_LIST:
+                    self.wfile.write(edit_device_list(2))
+                elif edit_list_choise == CLEAR_LIST:
+                    self.wfile.write(edit_device_list(3))
+                elif edit_list_choise == ADD_DEVICE:
+                    self.wfile.write("AIS_List_AddDevicesForCheck() ...\n")
+                    self.wfile.write(edit_device_list(4,"AIS_List_AddDeviceForCheck",int(device_type),int(device_id)))
+                elif edit_list_choise == ERASE_DEVICE:
+                    self.wfile.write("AIS_List_EraseDeviceForCheck()...\n")
+                    self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
+                else:
+                    self.wfile.write("")
+
             if len(HND_LIST) == 0:
-                self.wfile.write(">> NO DEVICES FOUND " )
+                self.wfile.write("\n>> NO DEVICES FOUND \n" )
                 return
+           
             if not device.isdigit():                 
                 dev.hnd = HND_LIST[0]
             elif int(device) > len(HND_LIST) or int(device) == 0:
@@ -144,16 +172,18 @@ class GetHandler(BaseHTTPRequestHandler):
             if pq[LIGHTS] != None:
                 lights_choise = ''.join(pq[LIGHTS])   
                                
-            if pq[EDIT_LIST] != None:
-                edit_list_choise = ''.join(pq[EDIT_LIST])
+            # if pq[EDIT_LIST] != None:
+            #     edit_list_choise = ''.join(pq[EDIT_LIST])
                
                       
-            if pq[DEVICE_TYPE] != None:
-                device_type = ''.join(pq[DEVICE_TYPE])
-            
-            if pq[DEVICE_ID] != None:
-                device_id  = ''.join(pq[DEVICE_ID])
+            # if pq[DEVICE_TYPE] != None:
+            #     device_type = ''.join(pq[DEVICE_TYPE])
+            #
+            # if pq[DEVICE_ID] != None:
+            #     device_id  = ''.join(pq[DEVICE_ID])
  
+            
+            
             if f == 'q':                           
                 self.wfile.write(GetListInformation())
                 
@@ -176,18 +206,24 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(AISSetTime())
             
             elif f == 'r':
-                pass                
-                stop_time = c_uint64()
-                stop_time = time.time() + seconds #10
-                dev = DEV_HND
-                self.wfile.write("Wait for RTE for %d sec ...\n" % seconds)       
-                while (time.ctime(time.time()) < time.ctime(stop_time)) :
-                    for hnd in HND_LIST:
-                        dev.hnd = hnd            
-                        r, rte = MainLoop()                       
-                        self.wfile.write(rte)
-                    time.sleep(THD_SLEEP)     
-                self.wfile.write ("End RTE listen")    
+                pass
+                try:
+                    if pq[RTE] != None:
+                        seconds = int(''.join(pq[RTE]))
+                    stop_time = c_uint64()
+                    stop_time = time.time() + seconds #10
+                    dev = DEV_HND
+                    self.wfile.write("Wait for RTE for %d sec ...\n" % seconds)       
+                    while (time.ctime(time.time()) < time.ctime(stop_time)) :
+                        for hnd in HND_LIST:
+                            dev.hnd = hnd            
+                            r, rte = MainLoop()                       
+                            self.wfile.write(rte)
+                        time.sleep(THD_SLEEP)     
+                    self.wfile.write ("End RTE listen") 
+                except(Exception):
+                    self.wfile.write("Must define value for seconds ...\n" )
+                    return   
                 
                   
             elif f == 'l':                         
@@ -261,22 +297,21 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(AISGetTime())
                 self.wfile.write(sys_get_timezone_info()+ "\n")
            
-            elif f == 'Q':             
-                if edit_list_choise == AVAILABLE_DEVICES :            
-                    self.wfile.write(edit_device_list(1))
-                elif edit_list_choise == ACTUAL_LIST:
-                    self.wfile.write(edit_device_list(2))
-                elif edit_list_choise == CLEAR_LIST:
-                    self.wfile.write(edit_device_list(3))
-                elif edit_list_choise == ADD_DEVICE:
-                    self.wfile.write("AIS_List_AddDevicesForCheck() ...\n")
-                    self.wfile.write(edit_device_list(4,"AIS_List_AddDeviceForCheck",int(device_type),int(device_id)))
-                elif edit_list_choise == ERASE_DEVICE:
-                    self.wfile.write("AIS_List_EraseDeviceForCheck()...\n")
-                    self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
-             
-                else:
-                    self.wfile.write("")
+            # elif f == 'Q':
+            #     if edit_list_choise == AVAILABLE_DEVICES :
+            #         self.wfile.write(edit_device_list(1))
+            #     elif edit_list_choise == ACTUAL_LIST:
+            #         self.wfile.write(edit_device_list(2))
+            #     elif edit_list_choise == CLEAR_LIST:
+            #         self.wfile.write(edit_device_list(3))
+            #     elif edit_list_choise == ADD_DEVICE:
+            #         self.wfile.write("AIS_List_AddDevicesForCheck() ...\n")
+            #         self.wfile.write(edit_device_list(4,"AIS_List_AddDeviceForCheck",int(device_type),int(device_id)))
+            #     elif edit_list_choise == ERASE_DEVICE:
+            #         self.wfile.write("AIS_List_EraseDeviceForCheck()...\n")
+            #         self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
+            #     else:
+            #         self.wfile.write("")
            
             elif f == 'E':
                 self.wfile.write(ee_lock())
@@ -306,7 +341,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     sys.exit(0)                
             return
                 
-        except (Exception) as error_mess:                    
+        except (Exception) as error_mess:                                
             self.wfile.write(error_mess)
            # self.wfile.write(traceback.print_exc())
         
