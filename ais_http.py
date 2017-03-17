@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.0  
+@version: 4.0.2.1 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -221,8 +221,8 @@ class GetHandler(BaseHTTPRequestHandler):
                             self.wfile.write(rte)
                         time.sleep(THD_SLEEP)     
                     self.wfile.write ("End RTE listen") 
-                except(Exception):
-                    self.wfile.write("Must define value for seconds ...\n" )
+                except Exception as vError:
+                    self.wfile.write(vError)
                     return   
                 
                   
@@ -341,9 +341,9 @@ class GetHandler(BaseHTTPRequestHandler):
                     sys.exit(0)                
             return
                 
-        except (Exception) as error_mess:                                
-            self.wfile.write(error_mess)
-           # self.wfile.write(traceback.print_exc())
+        except (Exception) as error_mess: 
+            self.wfile.write("ERROR: NO DEVICE ???")                               
+           
         
         
 def RunAll():   
