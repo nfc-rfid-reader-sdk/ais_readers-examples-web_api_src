@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.2.1 
+@version: 4.0.2.2 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -24,6 +24,11 @@ from socket import *
 
 from shell.ais_shell import *
 from constants import *
+
+global edit_time
+
+
+
 
 def http_request(path, post_attrib):
     try:
@@ -80,7 +85,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
                 if f == "SD":                  
                    # c = open(os.path.join(os.curdir, os.sep, log_dir, save_deb_log))
-                    c = open(os.getcwd() + os.sep + log_dir + os.sep +  save_deb_log)
+                    c = open(os.getcwd() + os.sep + log_dir + os.sep +  save_deb_log.strip())
                     self.send_response(200)
                     self.send_header("Content-type","text/json")
                     self.end_headers()
@@ -93,7 +98,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.send_header("Content-type","text/html")
                     self.end_headers()                    
                     #c =  open(os.curdir + os.sep + BBB_DEBUG_LOG)
-                    c = open(os.getcwd() + os.sep + log_dir + os.sep +  read_deb_log)
+                    c = open(os.getcwd() + os.sep + log_dir + os.sep +  read_deb_log.strip())
                     self.wfile.write("<html><head><title>Read Debug Log</title></head><body>")
                     for line in c:                    
                         l = line.encode("utf-8") 
@@ -170,19 +175,8 @@ class GetHandler(BaseHTTPRequestHandler):
                 get_unread_log = (''.join(pq[UNREAD_LOG]))
             
             if pq[LIGHTS] != None:
-                lights_choise = ''.join(pq[LIGHTS])   
-                               
-            # if pq[EDIT_LIST] != None:
-            #     edit_list_choise = ''.join(pq[EDIT_LIST])
-               
-                      
-            # if pq[DEVICE_TYPE] != None:
-            #     device_type = ''.join(pq[DEVICE_TYPE])
-            #
-            # if pq[DEVICE_ID] != None:
-            #     device_id  = ''.join(pq[DEVICE_ID])
- 
-            
+                lights_choise = ''.join(pq[LIGHTS])  
+
             
             if f == 'q':                           
                 self.wfile.write(GetListInformation())
@@ -202,7 +196,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(AISGetTime())       
             
             elif f == 'T':             
-                self.wfile.write(sys_get_timezone_info()+ "\n")
+                self.wfile.write(sys_get_timezone_info()+ "\n")               
                 self.wfile.write(AISSetTime())
             
             elif f == 'r':
@@ -296,22 +290,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(AISGetVersion())
                 self.wfile.write(AISGetTime())
                 self.wfile.write(sys_get_timezone_info()+ "\n")
-           
-            # elif f == 'Q':
-            #     if edit_list_choise == AVAILABLE_DEVICES :
-            #         self.wfile.write(edit_device_list(1))
-            #     elif edit_list_choise == ACTUAL_LIST:
-            #         self.wfile.write(edit_device_list(2))
-            #     elif edit_list_choise == CLEAR_LIST:
-            #         self.wfile.write(edit_device_list(3))
-            #     elif edit_list_choise == ADD_DEVICE:
-            #         self.wfile.write("AIS_List_AddDevicesForCheck() ...\n")
-            #         self.wfile.write(edit_device_list(4,"AIS_List_AddDeviceForCheck",int(device_type),int(device_id)))
-            #     elif edit_list_choise == ERASE_DEVICE:
-            #         self.wfile.write("AIS_List_EraseDeviceForCheck()...\n")
-            #         self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
-            #     else:
-            #         self.wfile.write("")
+       
            
             elif f == 'E':
                 self.wfile.write(ee_lock())
@@ -342,9 +321,11 @@ class GetHandler(BaseHTTPRequestHandler):
             return
                 
         except (Exception) as error_mess: 
-            self.wfile.write("ERROR: NO DEVICE ???")                               
+            #self.wfile.write("ERROR: NO DEVICE ???")                               
+            self.wfile.write(error_mess)                               
            
-        
+
+
         
 def RunAll():   
     serv = threading.Thread(target=handler_server)   
