@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.2.2 
+@version: 4.0.2.3 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -20,10 +20,15 @@ from urlparse import urlparse, parse_qs
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from ctypes import *
 from socket import *
+import shutil
+
+import pdb
+
 
 
 from shell.ais_shell import *
 from constants import *
+from test.warning_tests import outer
 
 global edit_time
 
@@ -69,9 +74,10 @@ class GetHandler(BaseHTTPRequestHandler):
                 pq = cgi.parse_multipart(self.rfile, pdict)
             elif ctype == 'application/x-www-form-urlencoded':
                 length = int(self.headers['content-length'])
-                pq = cgi.parse_qs(self.rfile.read(length), keep_blank_values=1)
+                pq = cgi.parse_qs(self.rfile.read(length), keep_blank_values=1)                
             else:
                 pq = {}
+                            
          
             f = ''.join(pq[FUNCTION])      
             # if pq[RTE] != None:        
@@ -202,19 +208,22 @@ class GetHandler(BaseHTTPRequestHandler):
             elif f == 'r':
                 pass
                 try:
-                    if pq[RTE] != None:
+                    if pq[RTE] == None:
+                        self.wfile.write('Must enter value for seconds !')
+                        return
+                    else:
                         seconds = int(''.join(pq[RTE]))
-                    stop_time = c_uint64()
-                    stop_time = time.time() + seconds #10
-                    dev = DEV_HND
-                    self.wfile.write("Wait for RTE for %d sec ...\n" % seconds)       
-                    while (time.ctime(time.time()) < time.ctime(stop_time)) :
-                        for hnd in HND_LIST:
-                            dev.hnd = hnd            
-                            r, rte = MainLoop()                       
-                            self.wfile.write(rte)
-                        time.sleep(THD_SLEEP)     
-                    self.wfile.write ("End RTE listen") 
+                        stop_time = c_uint64()
+                        stop_time = time.time() + seconds #10
+                        dev = DEV_HND
+                        self.wfile.write("Wait for RTE for %d sec ...\n" % seconds)       
+                        while (time.ctime(time.time()) < time.ctime(stop_time)) :
+                            for hnd in HND_LIST:
+                                dev.hnd = hnd            
+                                r, rte = MainLoop()                       
+                                self.wfile.write(rte)
+                            time.sleep(THD_SLEEP)     
+                        self.wfile.write ("End RTE listen") 
                 except Exception as vError:
                     self.wfile.write(vError)
                     return   
@@ -241,7 +250,7 @@ class GetHandler(BaseHTTPRequestHandler):
                       
             elif f == 'w':               
                 self.wfile.write(whitelist_read())
-                
+                                
             elif f == 'b':                
                 self.wfile.write(blacklist_read())
 
@@ -289,7 +298,7 @@ class GetHandler(BaseHTTPRequestHandler):
             elif f == 'i':              
                 self.wfile.write(AISGetVersion())
                 self.wfile.write(AISGetTime())
-                self.wfile.write(sys_get_timezone_info()+ "\n")
+                self.wfile.write(sys_get_timezone_info() + "\n")
        
            
             elif f == 'E':
@@ -298,17 +307,49 @@ class GetHandler(BaseHTTPRequestHandler):
             elif f == 'e':
                 self.wfile.write(ee_unlock())
            
-            elif f == 'F': 
-                bin_fname = ''.join(pq[BIN_FNAME])          
-                self.wfile.write(fw_update(fw_name=bin_fname))
+            elif f == 'F':              
+                try:
+                    if pq[BIN_FIRMWARE_NAME] != None:
+                        firmw_name = ''.join(pq[BIN_FIRMWARE_NAME])
+                        fwFile = ''.join(pq[BIN_FNAME])                                                                  
+                        with open(firmw_name, 'wb') as out:
+                            out.write(fwFile)                             
+                        self.wfile.write(fw_update(fw_name=firmw_name))               
+                    else:
+                        self.wfile.write('NO FILE')
+                except Exception as exc:
+                    self.wfile.write("ERROR: %s" % exc)
                 
             elif f == 's':
-                conf_file_rd = ''.join(pq[CONFIG_FILE_READ])
-                self.wfile.write(config_file_rd(fname=conf_file_rd))
+                try:
+                    if pq[CONFIG_FILE_READ] != None:
+                        conf_file_rd = ''.join(pq[CONFIG_FILE_READ])
+                        self.wfile.write(config_file_rd(fname=conf_file_rd))
+                        
+                        from socket import gethostname, gethostbyname 
+                        ip = gethostbyname(gethostname())
+                         
+                        with open(conf_file_rd + '.config' , 'wb') as out:                   
+                            http_request(ip + ":" + str(HTTP_SERVER_PORT), out.write(conf_file_rd + '.config'))
+                #ip + ":" + str(HTTP_SERVER_PORT)
+                except Exception as exc:
+                    self.wfile.write("ERROR: %s" % exc)
                 
-            elif f == 'S':
-                conf_file_wr = ''.join(pq[CONFIG_FILE_WRITE])
-                self.wfile.write(config_file_wr(fname=conf_file_wr))
+                
+            elif f == 'S':               
+                try:
+                    if pq[CONFIG_FILE_WR_NAME] != None:
+                        confFileNameWR = ''.join(pq[CONFIG_FILE_WR_NAME])
+                        confFileWR = ''.join(pq[CONFIG_FILE_WRITE])                                                     
+                        with open(confFileNameWR, 'wb') as out:
+                            out.write(confFileWR)                                                                                                                   
+                        self.wfile.write(config_file_wr(fname=confFileNameWR))  
+                       
+                    else:
+                        self.wfile.write('NO FILE')
+                except Exception as exc:
+                    self.wfile.write("ERROR: %s" % exc)
+ 
          
             elif f == 'x':
                 self.wfile.write("\nServer stopped !\nClose program !\n")            

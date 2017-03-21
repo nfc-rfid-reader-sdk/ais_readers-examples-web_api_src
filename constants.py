@@ -38,6 +38,8 @@ ERASE_DEVICE      = '5'
 DEVICE_TYPE       = 'device_type'
 DEVICE_ID         = 'device_id'
 BIN_FNAME         = 'BIN_fname'
+BIN_FIRMWARE_NAME = 'fwName'
+CONFIG_FILE_WR_NAME = 'confWR' 
 CONFIG_FILE_READ  = 'Config_file_RD'
 CONFIG_FILE_WRITE = 'Config_file_WR'
 
