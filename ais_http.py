@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.2.4 
+@version: 4.0.2.5 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -152,7 +152,8 @@ class GetHandler(BaseHTTPRequestHandler):
                 return
             else:
                 dev.hnd = HND_LIST[int(device) -1]
-             
+                #dev.hnd = DDEV_HND[dev.hnd][DEVHND]
+               
                                                                          
             if pq[START_INDEX] != None or pq[END_INDEX] != None:
                start_index = (''.join(pq[START_INDEX]))
