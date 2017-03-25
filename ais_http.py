@@ -28,7 +28,7 @@ import pdb
 
 from shell.ais_shell import *
 from constants import *
-from test.warning_tests import outer
+
 
 global edit_time
 
