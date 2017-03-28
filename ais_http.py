@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.2.5 
+@version: 4.0.3.1 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -21,10 +21,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from ctypes import *
 from socket import *
 import shutil
-
-import pdb
-
-
+import signal
 
 from shell.ais_shell import *
 from constants import *
@@ -86,7 +83,8 @@ class GetHandler(BaseHTTPRequestHandler):
         
             
             if GetBaseName() == AIS_MAIN:
-                log_dir = ''.join(pq[LOG_DIR]) 
+                #log_dir = ''.join(pq[LOG_DIR])
+                log_dir = 'debug_log' 
                 read_deb_log = ''.join(pq[READ_DEBUG_LOG])
                 save_deb_log = ''.join(pq[SAVE_DEBUG_LOG])
                 if f == "SD":                  
@@ -104,6 +102,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.send_header("Content-type","text/html")
                     self.end_headers()                    
                     #c =  open(os.curdir + os.sep + BBB_DEBUG_LOG)
+                    
                     c = open(os.getcwd() + os.sep + log_dir + os.sep +  read_deb_log.strip())
                     self.wfile.write("<html><head><title>Read Debug Log</title></head><body>")
                     for line in c:                    
@@ -140,6 +139,17 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
                 else:
                     self.wfile.write("")
+                    
+            if f == 'R':
+                import subprocess
+                try:
+                    command = 'sudo reboot '
+                    out = os.system(command)
+                    output = 'System Reboot NOW: %s' % out 
+                except Exception as exc_shut:
+                    output = 'System Reboot Error: %s ' % exc_shut
+                finally:                             
+                    self.wfile.write(output)
 
             if len(HND_LIST) == 0:
                 self.wfile.write("\n>> NO DEVICES FOUND \n" )
@@ -208,12 +218,13 @@ class GetHandler(BaseHTTPRequestHandler):
             
             elif f == 'r':
                 pass
-                try:
-                    if pq[RTE] == None:
-                        self.wfile.write('Must enter value for seconds !')
-                        return
-                    else:
-                        seconds = int(''.join(pq[RTE]))
+                rt = ''.join(pq[RTE])                                
+                if rt.strip() == '':
+                    self.wfile.write('Must enter value for seconds !')
+                    return
+                else:
+                    try:                   
+                        seconds = int(rt)
                         stop_time = c_uint64()
                         stop_time = time.time() + seconds #10
                         dev = DEV_HND
@@ -221,13 +232,14 @@ class GetHandler(BaseHTTPRequestHandler):
                         while (time.ctime(time.time()) < time.ctime(stop_time)) :
                             for hnd in HND_LIST:
                                 dev.hnd = hnd            
-                                r, rte = MainLoop()                       
-                                self.wfile.write(rte)
+                                r, rte = MainLoop()
+                                if rte != None:                                                       
+                                    self.wfile.write(rte)
                             time.sleep(THD_SLEEP)     
                         self.wfile.write ("End RTE listen") 
-                except Exception as vError:
-                    self.wfile.write(vError)
-                    return   
+                    except Exception as vError:
+                        self.wfile.write(vError)
+                        return   
                 
                   
             elif f == 'l':                         
@@ -350,14 +362,15 @@ class GetHandler(BaseHTTPRequestHandler):
                         self.wfile.write('NO FILE')
                 except Exception as exc:
                     self.wfile.write("ERROR: %s" % exc)
- 
-         
+                                                         
             elif f == 'x':
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
                 shut_event.set()
-                httpd.server_close()                
+                httpd.server_close()
+                               
                 if sys.platform.startswith('linux'):
                     os.system('pkill -9 python')
+                    os.kill(os.getpid(), signal.SIGINT)
                 elif sys.platform.startswith('win'):                    
                     sys.exit(0)                
             return

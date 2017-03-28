@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<head>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>AIS NFC READERS HTML EXAMPLE </title>
-<meta charset = "UTF-8">
+<meta charset="UTF-8">
 <style>
     #tbl-td {
 				border-style:none;
@@ -30,14 +31,21 @@
 			  }
 			
 </style>
-</head>
+<script type="text/javascript">
+    function printFileName(){
+        var firmware = document.getElementById('fileBIN').files[0].name; 
+        document.getElementById('fwName').value = firmware;
+        var configToDev = document.getElementById('ConfigfileWR').files[0].name;        
+        document.getElementById('confWR').value = configToDev;        
+    }
+</script></head>
  
 <body>
 
-<form method='post' action="" autocomplete="on">  
+<form method="post" action="" autocomplete="on" enctype="multipart/form-data">  
 <table style="width:90%">
-	<th colspan="6">AIS NFC READERS HTML EXAMPLE &nbsp<a href= " http://www.d-logic.net/nfc-rfid-reader-sdk/"> http://www.d-logic.net/nfc-rfid-reader-sdk/</th>
-	<tr>
+	<tbody><tr><th colspan="6">AIS NFC READERS HTML EXAMPLE &nbsp;<a href="%20http://www.d-logic.net/nfc-rfid-reader-sdk/"> http://www.d-logic.net/nfc-rfid-reader-sdk/</a></th>
+	</tr><tr>
 		<td>q</td>
 		<td>List devices</td>
 		<td>o</td>
@@ -50,52 +58,52 @@
 		<td>Get devices count</td>	
 		<td>t</td>
 		<td>Get Time</td>	
-		<td>T</td>
+		<td>T</td>		
 		<td>Set Time</td>					
 	</tr>
 	<tr>
 		<td>r</td>
-		<td>Real Time Events&nbsp<input type="text" name="rte" size="3" value="10"/></td>	
+		<td>Real Time Events&nbsp;<input name="rte" size="3" value="10" type="text"></td>	
 		<td>P</td>
-		<td>Set application password&nbsp<input type="text" name="default_app_pass" size="5" width="4"/></td>
+		<td>Set application password&nbsp;<input name="default_app_pass" size="5" type="text" width="4"></td>
 		<td>p</td>
-		<td>Change device password&nbsp<input type="text" name="new_pass" size="5"/></td>
+		<td>Change device password&nbsp;<input name="new_pass" size="5" type="text"></td>
 	</tr>
     <tr>	
 		<td>l</td>
 		<td>Get log</td>
 		<td>n</td>
-		<td>Get log by Index :&nbspS<input type="text" name="start_index" size="3"/>
-		E<input type="text" name="end_index" size="3"/>
+		<td>Get log by Index :&nbsp;S<input name="start_index" size="3" type="text">
+		E<input name="end_index" size="3" type="text">
 		</td>	
 		<td>N</td>
-		<td>Get log by Time: S<input type="text" name="start_time" size="15"/>
-		E<input type="text" name="end_time" size="15"/>
+		<td>Get log by Time: S<input name="start_time" size="15" type="text">
+		E<input name="end_time" size="15" type="text">
 		</td>
 	</tr>
 	<tr>
 		<td>u</td>
-		<td>Get unread log&nbsp <select name="unread_log">
-								<option value="1">Count</value>
-								<option value="2">Get</value>
-								<option value="3">Ack</value>
-								</select>
+		<td>Get unread log&nbsp; <select name="unread_log">
+								<option value="1" selected="selected">Count
+								</option><option value="2">Get
+								</option><option value="3">Ack
+								</option></select>
 		</td>	
 		<td>w</td>
 		<td>White-list Read</td>	
 		<td>W</td>
-		<td>White-list Write&nbsp<input type="text" name="white_list_write" size="15"/></td></td>
+		<td>White-list Write&nbsp;<input name="white_list_write" size="15" type="text"></td>
 	</tr>
 	<tr>
 		<td>b</td>
 		<td>Black-list Read</td>	
 		<td>B</td>
-		<td>Black-list Write&nbsp<input type="text" name="black_list_write" size="15"/></td>	
+		<td>Black-list Write&nbsp;<input name="black_list_write" size="15" type="text"></td>	
 		<td>L</td>
-		<td><input type="radio" name='lights' value='red_master' style="cursor:pointer;" checked="checked">Red Master
-			<input type="radio" name='lights' value='green_master' style="cursor:pointer;">Green Master
-		    <input type="radio" name='lights' value='red_slave' style="cursor:pointer;" >Red Slave
-		    <input type="radio" name='lights' value='green_slave' style="cursor:pointer;">Green Slave
+		<td><input name="lights" value="red_master" style="cursor:pointer;" checked="checked" type="radio">Red Master
+			<input name="lights" value="green_master" style="cursor:pointer;" type="radio">Green Master
+		    <input name="lights" value="red_slave" style="cursor:pointer;" type="radio">Red Slave
+		    <input name="lights" value="green_slave" style="cursor:pointer;" type="radio">Green Slave
 		</td>
 	</tr>	
 	<tr>
@@ -116,52 +124,70 @@
 	<tr>		
 		<td>F</td>		
 		<td>Firmware update</td>
-		<td colspan=2>&nbsp&nbspEnter full firmware BIN file name:</td>
-		<td colspan=3><input type="text" name="BIN_fname" size="80%" />	
+		<td colspan="2">&nbsp;&nbsp;Enter full firmware BIN file name:</td>      
+        <td colspan="3"><input id="fileBIN" name="BIN_fname" size="80%" type="file">        
+            <input id="fwName" name="fwName" type="hidden">      	
 		</td>
 	</tr>
 	<tr>
 		<td>s</td>
 		<td>Settings read from device to file</td>
-		<td colspan=2>&nbsp&nbspEnter to config file name:</td>
-		<td colspan=3><input type="text" name="Config_file_RD" size="80%"/>
+		<td colspan="2">&nbsp;&nbsp;Enter to config file name:</td>
+		<td colspan="3"><input name="Config_file_RD" size="80%" type="text">            
 		</td>
 	</tr>
 	<tr>
 		<td>S</td>
 		<td>Settings read from file to device</td>
-		<td colspan=2>&nbsp&nbspEnter to config file name:</td>
-		<td colspan=3><input type="text" name="Config_file_WR" size="80%"/></td>
+		<td colspan="2">&nbsp;&nbsp;Enter to config file name:</td>
+		<td colspan="3"><input id="ConfigfileWR" name="Config_file_WR" size="90%" type="file"></td>
+            <input id="confWR" name="confWR" type="hidden">
 	</tr>
 	<tr>	
 		<td>i</td>
 		<td>Devices Information</td>
 	</tr>
 	<tr>
-		<td rowspan=3>Q</td>
-		<td rowspan=3>Edit device list for checking </td>
-		<td colspan=4" style="text-align:center";>&nbsp <input type = "radio" name="edit_list" value=1 style="cursor:pointer;" checked="checked">Known device types
-                        &nbsp <input type = "radio" name="edit_list" value=2 style="cursor:pointer;">Actual list 
-						&nbsp <input type = "radio" name="edit_list" value=3 style="cursor:pointer;" >Clear list
+		<td rowspan="3">Q</td>
+		<td rowspan="3">Edit device list for checking </td>
+		<td colspan="4&quot;" style="text-align:center" ;="">&nbsp; <input name="edit_list" value="1" style="cursor:pointer;" checked="checked" type="radio">Known device types
+                        &nbsp; <input name="edit_list" value="2" style="cursor:pointer;" type="radio">Actual list 
+						&nbsp; <input name="edit_list" value="3" style="cursor:pointer;" type="radio">Clear list
 	    </td>
 	</tr>
-		<td colspan=2>
-		&nbsp <input type = "radio" name="edit_list" value=4 style="cursor:pointer;"/>Add device for check 
+		<tr><td colspan="2">
+		&nbsp; <input name="edit_list" value="4" style="cursor:pointer;" type="radio">Add device for check 
 		</td>
-	<td rowspan=2 colspan=2 style="text-align:center";>
-		&nbsp &nbsp Enter device type:<input type="text" name="device_type" size="5"/>
-		    &nbsp &nbsp Enter device ID:<input type="text" name="device_id" size="5"/>
+	<td rowspan="2" colspan="2" style="text-align:center" ;="">
+		&nbsp; &nbsp; Enter device type:<input name="device_type" size="5" type="text">
+		    &nbsp; &nbsp; Enter device ID:<input name="device_id" size="5" type="text">
         </td>
-	<tr>
-		<td colspan=2>
-		&nbsp <input type = "radio" name="edit_list" value=5 style="cursor:pointer;"/>Erase device from list
+	</tr><tr>
+		<td colspan="2">
+		&nbsp; <input name="edit_list" value="5" style="cursor:pointer;" type="radio">Erase device from list
         </td>						
-	</tr>	
-</table>
-<br/>
-Enter device:<input type="text" maxlength="2" name="device" size="3" />
-<input type="text" width="1px" name="get_function" size="3"/>
-<input type="submit" value="GET FUNCTION "/>
+	</tr>
+	<tr>
+		<td colspan="7"></td>
+	</tr>
+    <tr>	    
+	    <td colspan="1">R</td>
+		<td>REBOOT</td>										   	
+	</tr>
+	<tr>
+		<td>D</td>
+		<td>Read Debug Log : &nbsp; <input size="35" name="read_debug_log" type="text"></td>
+		<td>SD</td>					
+		<td colspan="3">Save Debug Log :&nbsp; <input size="35" name="save_debug_log" type="text">
+		&nbsp; * bbb_debug_log20160617.log
+		</td>		  
+	</tr>    
+</tbody></table>
+<br>
+Enter device:<input maxlength="2" name="device" size="3" type="text">
+<input name="get_function" size="3" type="text" width="1px">
+<input value="GET FUNCTION " onclick="printFileName();" type="submit">
 </form>
-</body>
-</html>
+
+
+</body></html>
