@@ -152,13 +152,13 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write(output)
 
             if len(HND_LIST) == 0:
-                self.wfile.write("\n>> NO DEVICES FOUND \n" )
+                self.wfile.write("\n>> NO DEVICES FOUND (or resource busy) \n " )
                 return
            
             if not device.isdigit():                 
                 dev.hnd = HND_LIST[0]
             elif int(device) > len(HND_LIST) or int(device) == 0:
-                self.wfile.write("dev[%s] : NO DEVICE FOUND " % device)
+                self.wfile.write("dev[%s] : NO DEVICE FOUND (or resource busy)" % device)
                 return
             else:
                 dev.hnd = HND_LIST[int(device) -1]
