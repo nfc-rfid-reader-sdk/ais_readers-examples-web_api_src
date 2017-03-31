@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.3.2 
+@version: 4.0.3.4 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -154,6 +154,7 @@ class GetHandler(BaseHTTPRequestHandler):
                         gitRepo = "https://{0}:{1}@git.d-logic.net/sw-python/ais-readers-cross_platform_client.git" .format(gitUserName, gitPassword)
                         output = 'git pull %s' % gitRepo 
                         out = os.system(output)
+                        if out == '' : out = 'Up To Date !'
                         self.wfile.write("GIT: %s" % out)
                       
                         #output = "git submodule update --remote --recursive -- %s" % gitRepo
