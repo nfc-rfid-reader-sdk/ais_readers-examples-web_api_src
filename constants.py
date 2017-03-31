@@ -42,6 +42,9 @@ BIN_FIRMWARE_NAME = 'fwName'
 CONFIG_FILE_WR_NAME = 'confWR' 
 CONFIG_FILE_READ  = 'Config_file_RD'
 CONFIG_FILE_WRITE = 'Config_file_WR'
+GIT_PULL          = 'Git_Pull'
+GIT_USERNAME      = 'git_username'
+GIT_PASS          = 'git_pass'
 
 
 

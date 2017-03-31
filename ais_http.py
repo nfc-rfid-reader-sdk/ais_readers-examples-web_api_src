@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.3.1 
+@version: 4.0.3.2 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -23,9 +23,9 @@ from socket import *
 import shutil
 import signal
 
+
 from shell.ais_shell import *
 from constants import *
-
 
 global edit_time
 
@@ -138,7 +138,28 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write("AIS_List_EraseDeviceForCheck()...\n")
                     self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
                 else:
-                    self.wfile.write("")
+                    self.wfile.write("")                           
+                       
+            if f == 'U':
+                if pq[GIT_USERNAME] == None:
+                    self.wfile.write('You must enter username !')
+                    return                
+                    if pq[GIT_PASS] == None:
+                        self.wfile.write('You must enter password !')
+                        return
+                else:  
+                    try:
+                        import subprocess
+                        gitUserName = pq[GIT_USERNAME]
+                        gitPassword = pq[GIT_PASS]                                                              
+                        output = subprocess.check_output(['git', 'pull'])
+                        self.wfile.write("GIT: %s" % output)    
+                        subOutput = subprocess.check_output(['git', 'submodule', 'update', '--recursive', '--remote'])
+                        if subOutput == '':subOutput = 'Up to date'
+                        self.wfile.write("Submodule: %s" % subOutput) 
+                    except Exception as exc:
+                        self.wfile.write("Exception: %s" % exc)
+                    
                     
             if f == 'R':
                 import subprocess
