@@ -149,14 +149,22 @@ class GetHandler(BaseHTTPRequestHandler):
                         return
                 else:  
                     try:
-                        import subprocess
-                        gitUserName = pq[GIT_USERNAME]
-                        gitPassword = pq[GIT_PASS]                                                              
-                        output = subprocess.check_output(['git', 'pull'])
-                        self.wfile.write("GIT: %s" % output)    
-                        subOutput = subprocess.check_output(['git', 'submodule', 'update', '--recursive', '--remote'])
-                        if subOutput == '':subOutput = 'Up to date'
-                        self.wfile.write("Submodule: %s" % subOutput) 
+                        gitUserName = ''.join(pq[GIT_USERNAME])
+                        gitPassword = ''.join(pq[GIT_PASS])                                                              
+                        gitRepo = "https://{0}:{1}@git.d-logic.net/sw-python/ais-readers-cross_platform_client.git" .format(gitUserName, gitPassword)
+                        output = 'git pull %s' % gitRepo 
+                        out = os.system(output)
+                        self.wfile.write("GIT: %s" % out)
+                      
+                        #output = "git submodule update --remote --recursive -- %s" % gitRepo
+                        #output = 'git submodule update --init --recursive --remote -- "shell" %s' % gitRepo
+                        #subOutput = os.system(output)
+                        #if subOutput == '':subOutput = 'Up to date'
+                        #self.wfile.write("\nSubmodule: %s" % subOutput) 
+                        
+                        #os.system('cd web_api/shell')
+                        # out = os.system('git submodule update')                        
+                        # self.wfile.write(out)
                     except Exception as exc:
                         self.wfile.write("Exception: %s" % exc)
                     
