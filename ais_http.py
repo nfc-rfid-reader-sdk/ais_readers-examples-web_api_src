@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.3.4 
+@version: 4.0.3.5 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -138,7 +138,18 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write("AIS_List_EraseDeviceForCheck()...\n")
                     self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
                 else:
-                    self.wfile.write("")                           
+                    self.wfile.write("") 
+                    
+                    
+            if f == 'IP':
+                from socket import gethostname, gethostbyname
+                from uuid import getnode               
+                ip = gethostbyname(gethostname())
+                mac = getnode()
+                macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
+                ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
+                self.wfile.write(ipMac)
+                                         
                        
             if f == 'U':
                 if pq[GIT_USERNAME] == None:
@@ -164,7 +175,7 @@ class GetHandler(BaseHTTPRequestHandler):
                         #self.wfile.write("\nSubmodule: %s" % subOutput) 
                         
                         #os.system('cd web_api/shell')
-                        out = os.system('output)                        
+                        out = os.system('output')                        
                         self.wfile.write('Submodule: %s' % out)
                     except Exception as exc:
                         self.wfile.write("Exception: %s" % exc)
