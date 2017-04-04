@@ -145,13 +145,14 @@ class GetHandler(BaseHTTPRequestHandler):
                 from socket import gethostname, gethostbyname                
                 from uuid import getnode 
                 mac = getnode()
-                lIP = ''
-                macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                
-                if sys.platform.startswith('linux'):
-                   from subprocess import check_output                                         
-                   lIP = check_output(['hostname ', '-I'])
+#                 lIP = ''
+#                 macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                
+#                 if sys.platform.startswith('linux'):
+#                    from subprocess import check_output                                         
+#                    lIP = check_output(['hostname ', '-I'])
                                       
                 ip = gethostbyname(gethostname())        
+#                 ipMac = "IP address  : %s : %s\nMAC address : %s\n" % (ip, lIP, macAddress) 
                 ipMac = "IP address  : %s : %s\nMAC address : %s\n" % (ip, lIP, macAddress) 
                 self.wfile.write(ipMac)
                 
