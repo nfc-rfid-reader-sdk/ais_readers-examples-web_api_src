@@ -168,15 +168,15 @@ class GetHandler(BaseHTTPRequestHandler):
                         if out == '' : out = 'Up To Date !'
                         self.wfile.write("GIT: %s" % out)
                       
-                        output = "git submodule update --remote --recursive " 
+                        #output = "git submodule update --remote --recursive " 
                         #output = 'git submodule update --init --recursive --remote -- "shell" %s' % gitRepo
                         #subOutput = os.system(output)
                         #if subOutput == '':subOutput = 'Up to date'
                         #self.wfile.write("\nSubmodule: %s" % subOutput) 
                         
                         #os.system('cd web_api/shell')
-                        out = os.system('output')                        
-                        self.wfile.write('Submodule: %s' % out)
+                        #out = os.system('output')                        
+                        #self.wfile.write('Submodule: %s' % out)
                     except Exception as exc:
                         self.wfile.write("Exception: %s" % exc)
                     
