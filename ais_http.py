@@ -112,6 +112,9 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write("</body></html>")
                     self.wfile.close()
                     return
+                
+              
+                
 
             if pq[DEVICE_TYPE] != None:
                 device_type = ''.join(pq[DEVICE_TYPE])
@@ -125,15 +128,22 @@ class GetHandler(BaseHTTPRequestHandler):
 
 
             if f == 'Q':
+                devtype = ''.join(pq[DEVICE_TYPE])
+                devid = ''.join(pq[DEVICE_ID])
+                
                 if edit_list_choise == AVAILABLE_DEVICES :
                     self.wfile.write(edit_device_list(1))
-                elif edit_list_choise == ACTUAL_LIST:
+                elif edit_list_choise == ACTUAL_LIST:                    
                     self.wfile.write(edit_device_list(2))
                 elif edit_list_choise == CLEAR_LIST:
                     self.wfile.write(edit_device_list(3))
                 elif edit_list_choise == ADD_DEVICE:
                     self.wfile.write("AIS_List_AddDevicesForCheck() ...\n")
-                    self.wfile.write(edit_device_list(4,"AIS_List_AddDeviceForCheck",int(device_type),int(device_id)))
+                    if devtype == '' or devid == '':
+                        self.wfile.write("You must enter values in the relevant fields !")
+                        return
+                    else:                        
+                        self.wfile.write(edit_device_list(4,"AIS_List_AddDeviceForCheck",int(device_type),int(device_id)))
                 elif edit_list_choise == ERASE_DEVICE:
                     self.wfile.write("AIS_List_EraseDeviceForCheck()...\n")
                     self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
