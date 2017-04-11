@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.3.5 
+@version: 4.0.3.7 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -122,15 +122,11 @@ class GetHandler(BaseHTTPRequestHandler):
             if pq[DEVICE_ID] != None:
                 device_id = ''.join(pq[DEVICE_ID])
 
-
             if pq[EDIT_LIST] != None:
                 edit_list_choise = ''.join(pq[EDIT_LIST])
 
 
-            if f == 'Q':
-                devtype = ''.join(pq[DEVICE_TYPE])
-                devid = ''.join(pq[DEVICE_ID])
-                
+            if f == 'Q':                                
                 if edit_list_choise == AVAILABLE_DEVICES :
                     self.wfile.write(edit_device_list(1))
                 elif edit_list_choise == ACTUAL_LIST:                    
@@ -139,7 +135,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write(edit_device_list(3))
                 elif edit_list_choise == ADD_DEVICE:
                     self.wfile.write("AIS_List_AddDevicesForCheck() ...\n")
-                    if devtype == '' or devid == '':
+                    if device_type == '' or device_id == '':
                         self.wfile.write("You must enter values in the relevant fields !")
                         return
                     else:                        
@@ -209,10 +205,12 @@ class GetHandler(BaseHTTPRequestHandler):
                 finally:                             
                     self.wfile.write(output)
 
+            '''
             if len(HND_LIST) == 0:
                 self.wfile.write("\n>> NO DEVICES FOUND (or resource busy) \n " )
                 return
-           
+            '''
+            '''        
             if not device.isdigit():                 
                 dev.hnd = HND_LIST[0]
             elif int(device) > len(HND_LIST) or int(device) == 0:
@@ -221,7 +219,7 @@ class GetHandler(BaseHTTPRequestHandler):
             else:
                 dev.hnd = HND_LIST[int(device) -1]
                 #dev.hnd = DDEV_HND[dev.hnd][DEVHND]
-               
+            '''   
                                                                          
             if pq[START_INDEX] != None or pq[END_INDEX] != None:
                start_index = (''.join(pq[START_INDEX]))
@@ -253,10 +251,27 @@ class GetHandler(BaseHTTPRequestHandler):
                 lights_choise = ''.join(pq[LIGHTS])  
 
             
-            if f == 'q':                           
+            if f == 'q':                                          
                 self.wfile.write(GetListInformation())
                 
-            elif f == 'o':                            
+            
+            if len(HND_LIST) == 0:
+                self.wfile.write("\nNO DEVICES FOUND (or resource busy) \n " )
+                return
+            
+                    
+            if not device.isdigit():                 
+                dev.hnd = HND_LIST[0]
+            elif int(device) > len(HND_LIST) or int(device) == 0:
+                self.wfile.write("dev[%s]NO DEVICE FOUND (or resource busy)" % device)
+                return
+            else:
+                dev.hnd = HND_LIST[int(device) -1]    
+                
+                
+                
+                
+            if f == 'o':                            
                 pass                
                 self.wfile.write(AISOpen())                
                     
