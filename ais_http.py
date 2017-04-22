@@ -154,7 +154,7 @@ class GetHandler(BaseHTTPRequestHandler):
                
                 ip = gethostbyname(gethostname())        
                 if sys.platform.startswith('linux'):                    
-                    ipMac = 'IP address  : ' + os.system('hostname -I')                    
+                    ipMac = 'IP address  : ' + str(os.system('hostname -I'))                    
                     ipMac += "\nMAC address : %s\n" % (macAddress)
                 else:
                     ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
