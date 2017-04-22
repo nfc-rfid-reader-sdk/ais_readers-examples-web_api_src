@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.3.7 
+@version: 4.0.3.8 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -12,7 +12,6 @@ import sys
 import cgi
 import threading
 import time
-import traceback
 import requests
 import urllib2, urllib
 from platform import platform
@@ -151,14 +150,11 @@ class GetHandler(BaseHTTPRequestHandler):
                 from socket import gethostname, gethostbyname                
                 from uuid import getnode 
                 mac = getnode()
-#                 lIP = ''
                 macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                
-#                 if sys.platform.startswith('linux'):
-#                    from subprocess import check_output                                         
-#                    lIP = check_output(['hostname ', '-I'])
-                                      
-                ip = gethostbyname(gethostname())        
-#                 ipMac = "IP address  : %s : %s\nMAC address : %s\n" % (ip, lIP, macAddress) 
+                if sys.platform.startswith('linux'):
+                    ip = os.system('hostname -I')
+                else:
+                    ip = gethostbyname(gethostname())                        
                 ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
                 self.wfile.write(ipMac)
                 
