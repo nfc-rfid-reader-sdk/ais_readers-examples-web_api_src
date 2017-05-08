@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.3.8 
+@version: 4.0.4.0 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -25,25 +25,22 @@ import signal
 
 from shell.ais_shell import *
 from constants import *
-
+ 
 global edit_time
 
-
-
-
-def http_request(path, post_attrib):
-    try:
-        #req_header = ("Content-type", "application/x-www-form-urlencoded")
-        #req = requests.get(path,params=post_attrib,headers=req_header)
-        
+def http_request(path, post_attrib, time_out=20):
+    try:       
         req = urllib2.Request(path, post_attrib)        
         req.add_header("Content-type", "application/x-www-form-urlencoded")
-        page = urllib2.urlopen(req).read()           
+        page = urllib2.urlopen(req, timeout=time_out).read()           
         return page
     except urllib2.URLError as e:
-        return e
-
-
+        if hasattr(e, 'reason'):
+            return e.reason       
+        elif hasattr(e, 'code'):
+            return e.code
+                     
+                    
 class GetHandler(BaseHTTPRequestHandler):
    
     global url_query
@@ -144,80 +141,75 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write(edit_device_list(5,"AIS_List_EraseDeviceForCheck",int(device_type),int(device_id)))
                 else:
                     self.wfile.write("") 
-                    
-                    
-            if f == 'IP':
-                from socket import gethostname, gethostbyname                
-                from uuid import getnode 
-                mac = getnode()
-                macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                
-               
-                ip = gethostbyname(gethostname())        
-                if sys.platform.startswith('linux'):                    
-                    ipMac = 'IP address  : ' + str(os.system('hostname -I'))                    
-                    ipMac += "\nMAC address : %s\n" % (macAddress)
-                else:
-                    ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
-                self.wfile.write(ipMac)
-                
-                                         
-                       
-            if f == 'U':
-                if pq[GIT_USERNAME] == None:
-                    self.wfile.write('You must enter username !')
-                    return                
-                    if pq[GIT_PASS] == None:
-                        self.wfile.write('You must enter password !')
-                        return
-                else:  
-                    try:
-                        gitUserName = ''.join(pq[GIT_USERNAME])
-                        gitPassword = ''.join(pq[GIT_PASS])                                                              
-                        gitRepo = "https://{0}:{1}@git.d-logic.net/sw-python/ais-readers-cross_platform_client.git" .format(gitUserName, gitPassword)
-                        output = 'git pull %s' % gitRepo 
-                        out = os.system(output)
-                        if out == '' : out = 'Up To Date !'
-                        self.wfile.write("GIT: %s" % out)
-                      
-                        #output = "git submodule update --remote --recursive " 
-                        #output = 'git submodule update --init --recursive --remote -- "shell" %s' % gitRepo
-                        #subOutput = os.system(output)
-                        #if subOutput == '':subOutput = 'Up to date'
-                        #self.wfile.write("\nSubmodule: %s" % subOutput) 
+                                  
+                if f == 'IP':
+                    from socket import gethostname, gethostbyname                
+                    from uuid import getnode 
+                    mac = getnode()
+                    macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                               
+                    ip = gethostbyname(gethostname())        
+                    if sys.platform.startswith('linux'):                    
+                        ipMac = 'IP address  : ' + str(os.system('hostname -I'))                    
+                        ipMac += "\nMAC address : %s\n" % (macAddress)
+                    else:                    
+                        ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
+                    self.wfile.write(ipMac)
+                                                                                            
+                if f == 'U':
+                    if pq[GIT_USERNAME] == None:
+                        self.wfile.write('You must enter username !')
+                        return                
+                        if pq[GIT_PASS] == None:
+                            self.wfile.write('You must enter password !')
+                            return
+                    else:  
+                        try:
+                            gitUserName = ''.join(pq[GIT_USERNAME])
+                            gitPassword = ''.join(pq[GIT_PASS])                                                              
+                            gitRepo = "https://{0}:{1}@git.d-logic.net/sw-python/ais-readers-cross_platform_client.git" .format(gitUserName, gitPassword)
+                            output = 'git pull %s' % gitRepo 
+                            out = os.system(output)
+                            if out == '' : out = 'Up To Date !'
+                            self.wfile.write("GIT: %s" % out)
+                          
+                            #output = "git submodule update --remote --recursive " 
+                            #output = 'git submodule update --init --recursive --remote -- "shell" %s' % gitRepo
+                            #subOutput = os.system(output)
+                            #if subOutput == '':subOutput = 'Up to date'
+                            #self.wfile.write("\nSubmodule: %s" % subOutput) 
+                            
+                            #os.system('cd web_api/shell')
+                            #out = os.system('output')                        
+                            #self.wfile.write('Submodule: %s' % out)
+                        except Exception as exc:
+                            self.wfile.write("Exception: %s" % exc)
                         
-                        #os.system('cd web_api/shell')
-                        #out = os.system('output')                        
-                        #self.wfile.write('Submodule: %s' % out)
-                    except Exception as exc:
-                        self.wfile.write("Exception: %s" % exc)
+                        
+                if f == 'R':
+                    import subprocess
+                    try:
+                        command = 'sudo reboot '
+                        out = os.system(command)
+                        output = 'System Reboot NOW: %s' % out 
+                    except Exception as exc_shut:
+                        output = 'System Reboot Error: %s ' % exc_shut
+                    finally:                             
+                        self.wfile.write(output)
                     
-                    
-            if f == 'R':
-                import subprocess
-                try:
-                    command = 'sudo reboot '
-                    out = os.system(command)
-                    output = 'System Reboot NOW: %s' % out 
-                except Exception as exc_shut:
-                    output = 'System Reboot Error: %s ' % exc_shut
-                finally:                             
-                    self.wfile.write(output)
-
-            '''
-            if len(HND_LIST) == 0:
-                self.wfile.write("\n>> NO DEVICES FOUND (or resource busy) \n " )
-                return
-            '''
-            '''        
-            if not device.isdigit():                 
-                dev.hnd = HND_LIST[0]
-            elif int(device) > len(HND_LIST) or int(device) == 0:
-                self.wfile.write("dev[%s] : NO DEVICE FOUND (or resource busy)" % device)
-                return
-            else:
-                dev.hnd = HND_LIST[int(device) -1]
-                #dev.hnd = DDEV_HND[dev.hnd][DEVHND]
-            '''   
+                '''
+                if len(HND_LIST) == 0:
+                    self.wfile.write("\n>> NO DEVICES FOUND (or resource busy) \n " )
+                    return
+                                        
+                if not device.isdigit():                 
+                    dev.hnd = HND_LIST[0]
+                elif int(device) > len(HND_LIST) or int(device) == 0:
+                    self.wfile.write("dev[%s] : NO DEVICE FOUND (or resource busy)" % device)
+                    return
+                else:
+                    dev.hnd = HND_LIST[int(device) -1]
+                    #dev.hnd = DDEV_HND[dev.hnd][DEVHND]
+                '''   
                                                                          
             if pq[START_INDEX] != None or pq[END_INDEX] != None:
                start_index = (''.join(pq[START_INDEX]))
@@ -257,7 +249,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write("\nNO DEVICES FOUND (or resource busy) \n " )
                 return
             
-                    
+                   
             if not device.isdigit():                 
                 dev.hnd = HND_LIST[0]
             elif int(device) > len(HND_LIST) or int(device) == 0:
@@ -265,9 +257,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 return
             else:
                 dev.hnd = HND_LIST[int(device) -1]    
-                
-                
-                
+                                                
                 
             if f == 'o':                            
                 pass                
@@ -433,6 +423,14 @@ class GetHandler(BaseHTTPRequestHandler):
                         self.wfile.write('NO FILE')
                 except Exception as exc:
                     self.wfile.write("ERROR: %s" % exc)
+            
+#             if GetBaseName() == AIS_MAIN:
+#                 from ais_readers_main_process import DoPOST
+#                 self.wfile.write(DoPOST(f))
+                
+            
+            
+            
                                                          
             elif f == 'x':
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
@@ -445,6 +443,10 @@ class GetHandler(BaseHTTPRequestHandler):
                 elif sys.platform.startswith('win'):                    
                     sys.exit(0)                
             return
+        
+        
+        
+        
                 
         except (Exception) as error_mess: 
             #self.wfile.write("ERROR: NO DEVICE ???")                               
