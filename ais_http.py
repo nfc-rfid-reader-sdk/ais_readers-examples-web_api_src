@@ -2,7 +2,7 @@
 
 """
 @author: Vladan S
-@version: 4.0.4.0 
+@version: 4.0.4.1 (build)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
@@ -424,14 +424,10 @@ class GetHandler(BaseHTTPRequestHandler):
                 except Exception as exc:
                     self.wfile.write("ERROR: %s" % exc)
             
-#             if GetBaseName() == AIS_MAIN:
-#                 from ais_readers_main_process import DoPOST
-#                 self.wfile.write(DoPOST(f))
-                
-            
-            
-            
-                                                         
+            if GetBaseName() == AIS_MAIN:
+                from ais_readers_main_process import DoPOST
+                self.wfile.write(DoPOST(f))
+                                                                         
             elif f == 'x':
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
                 shut_event.set()
