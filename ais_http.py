@@ -31,14 +31,16 @@ global edit_time
 def http_request(path, post_attrib, time_out=20):
     try:       
         req = urllib2.Request(path, post_attrib)        
-        req.add_header("Content-type", "application/x-www-form-urlencoded")
-        page = urllib2.urlopen(req, timeout=time_out).read()           
-        return page
-    except urllib2.URLError as e:
-        if hasattr(e, 'reason'):
-            return e.reason       
-        elif hasattr(e, 'code'):
-            return e.code
+        req.add_header("Content-type", "application/x-www-form-urlencoded")               
+        page = urllib2.urlopen(req, timeout=time_out)        
+        return page.read(), page.code
+    except (urllib2.URLError, urllib2.HTTPError)  as e:
+        return '', e.code
+    
+        #if hasattr(e, 'reason'):
+            #return e.reason       
+        #elif hasattr(e, 'code'):
+            #return e.code
                      
                     
 class GetHandler(BaseHTTPRequestHandler):
