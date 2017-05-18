@@ -2,10 +2,10 @@
 
 """
 @author: Vladan S
-@version: 4.0.4.1 (build)
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
+__program_version = '4.0.4.2 (build)'
 
 import os
 import sys
@@ -28,19 +28,25 @@ from constants import *
  
 global edit_time
 
+
+def AisHttpGetProgramVersion():
+    return 'App name  : {0}  : {1}' . format(AIS_HTTP, __program_version)
+
+
 def http_request(path, post_attrib, time_out=20):
     try:       
         req = urllib2.Request(path, post_attrib)        
         req.add_header("Content-type", "application/x-www-form-urlencoded")               
         page = urllib2.urlopen(req, timeout=time_out)        
         return page.read(), page.code
-    except (urllib2.URLError, urllib2.HTTPError)  as e:
-        return '', e.code
-    
+    except urllib2.URLError, urlExc:
+        return '', urlExc.reason
+    except urllib2.HTTPError, httpExc:
+        return '', httpExc.code
         #if hasattr(e, 'reason'):
-            #return e.reason       
+            #return '', e.reason       
         #elif hasattr(e, 'code'):
-            #return e.code
+            #return '', e.code
                      
                     
 class GetHandler(BaseHTTPRequestHandler):
@@ -79,7 +85,6 @@ class GetHandler(BaseHTTPRequestHandler):
             #     seconds = int(''.join(pq[RTE]))
             device = ''.join(pq[DEVICE])                    
         
-            
             if GetBaseName() == AIS_MAIN:
                 #log_dir = ''.join(pq[LOG_DIR])
                 log_dir = 'debug_log' 
@@ -109,10 +114,9 @@ class GetHandler(BaseHTTPRequestHandler):
                     c.close()
                     self.wfile.write("</body></html>")
                     self.wfile.close()
-                    return
-                
-              
-                
+                    return                            
+            
+                               
 
             if pq[DEVICE_TYPE] != None:
                 device_type = ''.join(pq[DEVICE_TYPE])
@@ -144,59 +148,63 @@ class GetHandler(BaseHTTPRequestHandler):
                 else:
                     self.wfile.write("") 
                                   
-                if f == 'IP':
-                    from socket import gethostname, gethostbyname                
-                    from uuid import getnode 
-                    mac = getnode()
-                    macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                               
-                    ip = gethostbyname(gethostname())        
-                    if sys.platform.startswith('linux'):                    
-                        ipMac = 'IP address  : ' + str(os.system('hostname -I'))                    
-                        ipMac += "\nMAC address : %s\n" % (macAddress)
-                    else:                    
-                        ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
+            if f == 'IP':
+                from socket import gethostname, gethostbyname                
+                from uuid import getnode 
+                mac = getnode()
+                macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                               
+                ip = gethostbyname(gethostname())        
+                if sys.platform.startswith('linux'):                    
+                    ipMac = 'IP address  : ' + str(os.system('hostname -I'))                    
+                    ipMac += "\nMAC address : %s\n" % (macAddress)
                     self.wfile.write(ipMac)
-                                                                                            
-                if f == 'U':
-                    if pq[GIT_USERNAME] == None:
-                        self.wfile.write('You must enter username !')
-                        return                
-                        if pq[GIT_PASS] == None:
-                            self.wfile.write('You must enter password !')
-                            return
-                    else:  
-                        try:
-                            gitUserName = ''.join(pq[GIT_USERNAME])
-                            gitPassword = ''.join(pq[GIT_PASS])                                                              
-                            gitRepo = "https://{0}:{1}@git.d-logic.net/sw-python/ais-readers-cross_platform_client.git" .format(gitUserName, gitPassword)
-                            output = 'git pull %s' % gitRepo 
-                            out = os.system(output)
-                            if out == '' : out = 'Up To Date !'
-                            self.wfile.write("GIT: %s" % out)
-                          
-                            #output = "git submodule update --remote --recursive " 
-                            #output = 'git submodule update --init --recursive --remote -- "shell" %s' % gitRepo
-                            #subOutput = os.system(output)
-                            #if subOutput == '':subOutput = 'Up to date'
-                            #self.wfile.write("\nSubmodule: %s" % subOutput) 
-                            
-                            #os.system('cd web_api/shell')
-                            #out = os.system('output')                        
-                            #self.wfile.write('Submodule: %s' % out)
-                        except Exception as exc:
-                            self.wfile.write("Exception: %s" % exc)
-                        
-                        
-                if f == 'R':
-                    import subprocess
+                else:                    
+                    ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
+                    self.wfile.write(ipMac)
+                
+                                                                                        
+            if f == 'U':
+                if pq[GIT_USERNAME] == None:
+                    self.wfile.write('You must enter username !')
+                    return                
+                    if pq[GIT_PASS] == None:
+                        self.wfile.write('You must enter password !')
+                        return
+                else:  
                     try:
-                        command = 'sudo reboot '
-                        out = os.system(command)
-                        output = 'System Reboot NOW: %s' % out 
-                    except Exception as exc_shut:
-                        output = 'System Reboot Error: %s ' % exc_shut
-                    finally:                             
-                        self.wfile.write(output)
+                        gitUserName = ''.join(pq[GIT_USERNAME])
+                        gitPassword = ''.join(pq[GIT_PASS])                                                              
+                        gitRepo = "https://{0}:{1}@git.d-logic.net/sw-python/ais-readers-cross_platform_client.git" .format(gitUserName, gitPassword)
+                        output = 'git pull %s' % gitRepo 
+                        out = os.system(output)
+                        if out == '' : out = 'Up To Date !'
+                        self.wfile.write("GIT: %s" % out)
+                      
+                        #output = "git submodule update --remote --recursive " 
+                        #output = 'git submodule update --init --recursive --remote -- "shell" %s' % gitRepo
+                        #subOutput = os.system(output)
+                        #if subOutput == '':subOutput = 'Up to date'
+                        #self.wfile.write("\nSubmodule: %s" % subOutput) 
+                        
+                        #os.system('cd web_api/shell')
+                        #out = os.system('output')                        
+                        #self.wfile.write('Submodule: %s' % out)
+                    except Exception as exc:
+                        self.wfile.write("Exception: %s" % exc)
+                                                    
+            if f == 'R':
+                import subprocess
+                try:
+                    if sys.platform.startswith('win'):
+                        output = 'Cannot use reboot for Windows !\n'
+                        return
+                    command = 'sudo reboot '
+                    out = os.system(command)
+                    output = 'System Reboot NOW: %s' % out 
+                except Exception as exc_shut:
+                    output = 'System Reboot Error: %s ' % exc_shut
+                finally:                             
+                    self.wfile.write(output)
                     
                 '''
                 if len(HND_LIST) == 0:
