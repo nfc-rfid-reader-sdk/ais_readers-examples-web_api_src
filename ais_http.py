@@ -21,7 +21,7 @@ from ctypes import *
 from socket import *
 import shutil
 import signal
-import subprocess
+
 
 
 from shell.ais_shell import *
@@ -151,7 +151,8 @@ class GetHandler(BaseHTTPRequestHandler):
                                   
             if f == 'IP':
                 from socket import gethostname, gethostbyname                
-                from uuid import getnode 
+                from uuid import getnode
+                import subprocess
                 mac = getnode()
                 macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                               
                 ip = gethostbyname(gethostname())        
