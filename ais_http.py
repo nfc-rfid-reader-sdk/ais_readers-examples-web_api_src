@@ -21,6 +21,7 @@ from ctypes import *
 from socket import *
 import shutil
 import signal
+import subprocess
 
 
 from shell.ais_shell import *
@@ -155,8 +156,8 @@ class GetHandler(BaseHTTPRequestHandler):
                 macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                               
                 ip = gethostbyname(gethostname())        
                 if sys.platform.startswith('linux'):                    
-                    ipMac = 'IP address  : ' + str(os.system('hostname -I'))                    
-                    ipMac += "\nMAC address : %s\n" % (macAddress)
+                    l = subprocess.Popen(['hostname', '-I'], stdout=subprocess.PIPE)
+                    ipMac = 'IP address  :{0}MAC address :{1}' .format(l.communicate()[0], macAddress)
                     self.wfile.write(ipMac)
                 else:                    
                     ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
