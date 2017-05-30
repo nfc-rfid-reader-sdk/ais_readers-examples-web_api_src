@@ -445,9 +445,10 @@ class GetHandler(BaseHTTPRequestHandler):
                                                                          
             elif f == 'x':
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
-                shut_event.set()
+                shut_event.set()                
                 httpd.server_close()
-                               
+                httpd.shutdown()
+                
                 if sys.platform.startswith('linux'):
                     os.system('pkill -9 python')
                     os.kill(os.getpid(), signal.SIGINT)
