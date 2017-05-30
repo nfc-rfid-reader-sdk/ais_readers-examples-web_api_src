@@ -253,6 +253,11 @@ class GetHandler(BaseHTTPRequestHandler):
                 lights_choise = ''.join(pq[LIGHTS])  
 
             
+            if GetBaseName() == AIS_MAIN:
+                from ais_readers_main_process import DoPOST
+                self.wfile.write(DoPOST(f))            
+            
+            
             if f == 'q':                                          
                 self.wfile.write(GetListInformation())
                 
@@ -436,9 +441,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 except Exception as exc:
                     self.wfile.write("ERROR: %s" % exc)
             
-            if GetBaseName() == AIS_MAIN:
-                from ais_readers_main_process import DoPOST
-                self.wfile.write(DoPOST(f))
+            
                                                                          
             elif f == 'x':
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
@@ -449,7 +452,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     os.system('pkill -9 python')
                     os.kill(os.getpid(), signal.SIGINT)
                 elif sys.platform.startswith('win'):                    
-                    sys.exit(0)                
+                    sys._exit(0)                
             return
         
         
