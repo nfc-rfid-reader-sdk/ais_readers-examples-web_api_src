@@ -445,24 +445,17 @@ class GetHandler(BaseHTTPRequestHandler):
                                                                          
             elif f == 'x':
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
-                shut_event.set()                
-                httpd.server_close()
-                httpd.shutdown()
-                
+                shut_event.set()                                            
                 if sys.platform.startswith('linux'):
                     os.system('pkill -9 python')
                     os.kill(os.getpid(), signal.SIGINT)
                 elif sys.platform.startswith('win'):                    
-                    sys._exit(0)                
+                    os._exit(0)                
             return
-        
-        
-        
-        
-                
+                                
         except (Exception) as error_mess: 
             #self.wfile.write("ERROR: NO DEVICE ???")                               
-            self.wfile.write(error_mess)                               
+            self.wfile.write(error_mess.message)                               
            
 
 
