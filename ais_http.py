@@ -5,7 +5,7 @@
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
-__program_version = '4.0.4.2 (build)'
+__program_version = '4.0.4.3 (build)'
 
 import os
 import sys
@@ -283,8 +283,10 @@ class GetHandler(BaseHTTPRequestHandler):
             elif f == 'c':
                 self.wfile.write(AISClose())
             
-            if f == 'd':                             
-                self.wfile.write('GET DEVICES COUNT > %s\n' % AISUpdateAndGetCount())                        
+            if f == 'd':
+                res, count= AISUpdateAndGetCount()                
+                self.wfile.write(' COUNT >> {0} {1}'.format(count, wr_status('', res)))
+                                      
         
             elif f == 't': 
                 self.wfile.write(active_device()) 
@@ -380,9 +382,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write("Try set new password for units= %s\n" % (new_pass))
                 self.wfile.write(password_change(new_pass))                       
 
-            elif f == 'd':
-                self.wfile.write(AISGetDevicesForCheck()) 
-          
+                      
             elif f == 'f':               
                 self.wfile.write(AISGetVersion())
             
@@ -441,8 +441,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 except Exception as exc:
                     self.wfile.write("ERROR: %s" % exc)
             
-            
-                                                                         
+                                                                                     
             elif f == 'x':
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
                 shut_event.set()                                            
@@ -453,8 +452,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     os._exit(0)                
             return
                                 
-        except (Exception) as error_mess: 
-            #self.wfile.write("ERROR: NO DEVICE ???")                               
+        except (Exception) as error_mess:                                         
             self.wfile.write(error_mess.message)                               
            
 
