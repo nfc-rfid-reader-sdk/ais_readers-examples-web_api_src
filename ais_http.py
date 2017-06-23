@@ -5,7 +5,7 @@
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
-__program_version = '4.0.4.3 (build)'
+__program_version = '4.0.4.4 (build)'
 
 import os
 import sys
@@ -86,7 +86,7 @@ class GetHandler(BaseHTTPRequestHandler):
             #     seconds = int(''.join(pq[RTE]))
             device = ''.join(pq[DEVICE])                    
         
-            if GetBaseName() == AIS_MAIN:
+            if GetBaseName() == AIS_MAIN or GetBaseName() == AIS_MAIN_EXE:
                 #log_dir = ''.join(pq[LOG_DIR])
                 log_dir = 'debug_log' 
                 read_deb_log = ''.join(pq[READ_DEBUG_LOG])
@@ -253,7 +253,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 lights_choise = ''.join(pq[LIGHTS])  
 
             
-            if GetBaseName() == AIS_MAIN:
+            if GetBaseName() == AIS_MAIN or GetBaseName() == AIS_MAIN_EXE:
                 from ais_readers_main_process import DoPOST
                 self.wfile.write(DoPOST(f))            
             
