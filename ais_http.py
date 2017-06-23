@@ -442,7 +442,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write("ERROR: %s" % exc)
             
                                                                                      
-            elif f == 'x':
+            elif f in ('x','X'):
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
                 shut_event.set()                                            
                 if sys.platform.startswith('linux'):
