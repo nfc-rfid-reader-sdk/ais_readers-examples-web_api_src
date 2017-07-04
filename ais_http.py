@@ -2,10 +2,10 @@
 
 """
 @author: Vladan S
-@version: 4.0.4.0 
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
+__program_version = '4.0.4.4 (build)'
 
 import os
 import sys
@@ -23,22 +23,31 @@ import shutil
 import signal
 
 
+
 from shell.ais_shell import *
 from constants import *
  
 global edit_time
 
+
+def AisHttpGetProgramVersion():
+    return 'App name  : {0}  : {1}' . format(AIS_HTTP, __program_version)
+
+
 def http_request(path, post_attrib, time_out=20):
     try:       
         req = urllib2.Request(path, post_attrib)        
-        req.add_header("Content-type", "application/x-www-form-urlencoded")
-        page = urllib2.urlopen(req, timeout=time_out).read()           
-        return page
-    except urllib2.URLError as e:
-        if hasattr(e, 'reason'):
-            return e.reason       
-        elif hasattr(e, 'code'):
-            return e.code
+        req.add_header("Content-type", "application/x-www-form-urlencoded")               
+        page = urllib2.urlopen(req, timeout=time_out)        
+        return page.read(), page.code
+    except urllib2.URLError, urlExc:
+        return '', urlExc.reason
+    except urllib2.HTTPError, httpExc:
+        return '', httpExc.code
+        #if hasattr(e, 'reason'):
+            #return '', e.reason       
+        #elif hasattr(e, 'code'):
+            #return '', e.code
                      
                     
 class GetHandler(BaseHTTPRequestHandler):
@@ -77,8 +86,7 @@ class GetHandler(BaseHTTPRequestHandler):
             #     seconds = int(''.join(pq[RTE]))
             device = ''.join(pq[DEVICE])                    
         
-            
-            if GetBaseName() == AIS_MAIN:
+            if GetBaseName() == AIS_MAIN or GetBaseName() == AIS_MAIN_EXE:
                 #log_dir = ''.join(pq[LOG_DIR])
                 log_dir = 'debug_log' 
                 read_deb_log = ''.join(pq[READ_DEBUG_LOG])
@@ -107,10 +115,9 @@ class GetHandler(BaseHTTPRequestHandler):
                     c.close()
                     self.wfile.write("</body></html>")
                     self.wfile.close()
-                    return
-                
-              
-                
+                    return                            
+            
+                               
 
             if pq[DEVICE_TYPE] != None:
                 device_type = ''.join(pq[DEVICE_TYPE])
@@ -142,59 +149,64 @@ class GetHandler(BaseHTTPRequestHandler):
                 else:
                     self.wfile.write("") 
                                   
-                if f == 'IP':
-                    from socket import gethostname, gethostbyname                
-                    from uuid import getnode 
-                    mac = getnode()
-                    macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                               
-                    ip = gethostbyname(gethostname())        
-                    if sys.platform.startswith('linux'):                    
-                        ipMac = 'IP address  : ' + str(os.system('hostname -I'))                    
-                        ipMac += "\nMAC address : %s\n" % (macAddress)
-                    else:                    
-                        ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
+            if f == 'IP':
+                from socket import gethostname, gethostbyname                
+                from uuid import getnode
+                import subprocess
+                mac = getnode()
+                macAddress = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))                               
+                ip = gethostbyname(gethostname())        
+                if sys.platform.startswith('linux'):                    
+                    l = subprocess.Popen(['hostname', '-I'], stdout=subprocess.PIPE)
+                    ipMac = 'IP address  :{0}MAC address :{1}' .format(l.communicate()[0], macAddress)
                     self.wfile.write(ipMac)
-                                                                                            
-                if f == 'U':
-                    if pq[GIT_USERNAME] == None:
-                        self.wfile.write('You must enter username !')
-                        return                
-                        if pq[GIT_PASS] == None:
-                            self.wfile.write('You must enter password !')
-                            return
-                    else:  
-                        try:
-                            gitUserName = ''.join(pq[GIT_USERNAME])
-                            gitPassword = ''.join(pq[GIT_PASS])                                                              
-                            gitRepo = "https://{0}:{1}@git.d-logic.net/sw-python/ais-readers-cross_platform_client.git" .format(gitUserName, gitPassword)
-                            output = 'git pull %s' % gitRepo 
-                            out = os.system(output)
-                            if out == '' : out = 'Up To Date !'
-                            self.wfile.write("GIT: %s" % out)
-                          
-                            #output = "git submodule update --remote --recursive " 
-                            #output = 'git submodule update --init --recursive --remote -- "shell" %s' % gitRepo
-                            #subOutput = os.system(output)
-                            #if subOutput == '':subOutput = 'Up to date'
-                            #self.wfile.write("\nSubmodule: %s" % subOutput) 
-                            
-                            #os.system('cd web_api/shell')
-                            #out = os.system('output')                        
-                            #self.wfile.write('Submodule: %s' % out)
-                        except Exception as exc:
-                            self.wfile.write("Exception: %s" % exc)
-                        
-                        
-                if f == 'R':
-                    import subprocess
+                else:                    
+                    ipMac = "IP address  : %s\nMAC address : %s\n" % (ip, macAddress) 
+                    self.wfile.write(ipMac)
+                
+                                                                                        
+            if f == 'U':
+                if pq[GIT_USERNAME] == None:
+                    self.wfile.write('You must enter username !')
+                    return                
+                    if pq[GIT_PASS] == None:
+                        self.wfile.write('You must enter password !')
+                        return
+                else:  
                     try:
-                        command = 'sudo reboot '
-                        out = os.system(command)
-                        output = 'System Reboot NOW: %s' % out 
-                    except Exception as exc_shut:
-                        output = 'System Reboot Error: %s ' % exc_shut
-                    finally:                             
-                        self.wfile.write(output)
+                        gitUserName = ''.join(pq[GIT_USERNAME])
+                        gitPassword = ''.join(pq[GIT_PASS])                                                              
+                        gitRepo = "https://{0}:{1}@git.d-logic.net/sw-python/ais-readers-cross_platform_client.git" .format(gitUserName, gitPassword)
+                        output = 'git pull %s' % gitRepo 
+                        out = os.system(output)
+                        if out == '' : out = 'Up To Date !'
+                        self.wfile.write("GIT: %s" % out)
+                      
+                        #output = "git submodule update --remote --recursive " 
+                        #output = 'git submodule update --init --recursive --remote -- "shell" %s' % gitRepo
+                        #subOutput = os.system(output)
+                        #if subOutput == '':subOutput = 'Up to date'
+                        #self.wfile.write("\nSubmodule: %s" % subOutput) 
+                        
+                        #os.system('cd web_api/shell')
+                        #out = os.system('output')                        
+                        #self.wfile.write('Submodule: %s' % out)
+                    except Exception as exc:
+                        self.wfile.write("Exception: %s" % exc)
+                                                    
+            if f == 'R':
+                import subprocess
+                try:
+                    if sys.platform.startswith('win'):
+                        output = 'Cannot use reboot for Windows !\n'
+                        return
+                    command = 'sudo reboot '
+                    out = os.system(command)
+                    output = 'System Reboot NOW: %s' % out 
+                except Exception as exc_shut:
+                    output = 'System Reboot Error: %s ' % exc_shut
+                finally:                             
+                    self.wfile.write(output)
                     
                 '''
                 if len(HND_LIST) == 0:
@@ -241,6 +253,11 @@ class GetHandler(BaseHTTPRequestHandler):
                 lights_choise = ''.join(pq[LIGHTS])  
 
             
+            if GetBaseName() == AIS_MAIN or GetBaseName() == AIS_MAIN_EXE:
+                from ais_readers_main_process import DoPOST
+                self.wfile.write(DoPOST(f))            
+            
+            
             if f == 'q':                                          
                 self.wfile.write(GetListInformation())
                 
@@ -266,8 +283,10 @@ class GetHandler(BaseHTTPRequestHandler):
             elif f == 'c':
                 self.wfile.write(AISClose())
             
-            if f == 'd':                             
-                self.wfile.write('GET DEVICES COUNT > %s\n' % AISUpdateAndGetCount())                        
+            if f == 'd':
+                res, count= AISUpdateAndGetCount()                
+                self.wfile.write(' COUNT >> {0} {1}'.format(count, wr_status('', res)))
+                                      
         
             elif f == 't': 
                 self.wfile.write(active_device()) 
@@ -363,9 +382,7 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write("Try set new password for units= %s\n" % (new_pass))
                 self.wfile.write(password_change(new_pass))                       
 
-            elif f == 'd':
-                self.wfile.write(AISGetDevicesForCheck()) 
-          
+                      
             elif f == 'f':               
                 self.wfile.write(AISGetVersion())
             
@@ -424,33 +441,19 @@ class GetHandler(BaseHTTPRequestHandler):
                 except Exception as exc:
                     self.wfile.write("ERROR: %s" % exc)
             
-#             if GetBaseName() == AIS_MAIN:
-#                 from ais_readers_main_process import DoPOST
-#                 self.wfile.write(DoPOST(f))
-                
-            
-            
-            
-                                                         
-            elif f == 'x':
+                                                                                     
+            elif f in ('x','X'):
                 self.wfile.write("\nServer stopped !\nClose program !\n")            
-                shut_event.set()
-                httpd.server_close()
-                               
+                shut_event.set()                                            
                 if sys.platform.startswith('linux'):
                     os.system('pkill -9 python')
                     os.kill(os.getpid(), signal.SIGINT)
                 elif sys.platform.startswith('win'):                    
-                    sys.exit(0)                
+                    os._exit(0)                
             return
-        
-        
-        
-        
-                
-        except (Exception) as error_mess: 
-            #self.wfile.write("ERROR: NO DEVICE ???")                               
-            self.wfile.write(error_mess)                               
+                                
+        except (Exception) as error_mess:                                         
+            self.wfile.write(error_mess.message)                               
            
 
 
