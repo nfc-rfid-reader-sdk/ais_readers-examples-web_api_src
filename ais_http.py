@@ -5,7 +5,7 @@
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
-__program_version = '4.0.4.4 (build)'
+__program_version = '4.0.4.5 (build)' 
 
 import os
 import sys
@@ -262,9 +262,25 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(GetListInformation())
                 
             
+            if f == 'v':            
+                self.wfile.write("AIS_GetDLLVersion() >> %s\n" % AISGetLibraryVersionStr())
+            
+            
+            if f in ('x','X'):
+                self.wfile.write("\nServer stopped !\nClose program !\n")            
+                shut_event.set()                                            
+                if sys.platform.startswith('linux'):
+                    os.system('pkill -9 python')
+                    os.kill(os.getpid(), signal.SIGINT)
+                elif sys.platform.startswith('win'):                    
+                    os._exit(0)   
+            
+            
+            
             if len(HND_LIST) == 0:
                 self.wfile.write("\nNO DEVICES FOUND (or resource busy) \n " )
                 return
+   
             
                    
             if not device.isdigit():                 
@@ -275,7 +291,8 @@ class GetHandler(BaseHTTPRequestHandler):
             else:
                 dev.hnd = HND_LIST[int(device) -1]    
                                                 
-                
+    #==========================================================================            
+           
             if f == 'o':                            
                 pass                
                 self.wfile.write(AISOpen())                
@@ -338,8 +355,8 @@ class GetHandler(BaseHTTPRequestHandler):
                 get_unread_log = int(get_unread_log)                                
                 self.wfile.write(get_unread_log_one(get_unread_log))
            
-            elif f == 'v':            
-                self.wfile.write("AIS_GetDLLVersion() >> %s\n" % AISGetLibraryVersionStr())
+#             elif f == 'v':            
+#                 self.wfile.write("AIS_GetDLLVersion() >> %s\n" % AISGetLibraryVersionStr())
                       
             elif f == 'w':               
                 self.wfile.write(whitelist_read())
@@ -390,7 +407,11 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(AISGetVersion())
                 self.wfile.write(AISGetTime())
                 self.wfile.write(sys_get_timezone_info() + "\n")
-       
+            
+            
+           
+            
+            
            
             elif f == 'E':
                 self.wfile.write(ee_lock())
@@ -442,14 +463,14 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.wfile.write("ERROR: %s" % exc)
             
                                                                                      
-            elif f in ('x','X'):
-                self.wfile.write("\nServer stopped !\nClose program !\n")            
-                shut_event.set()                                            
-                if sys.platform.startswith('linux'):
-                    os.system('pkill -9 python')
-                    os.kill(os.getpid(), signal.SIGINT)
-                elif sys.platform.startswith('win'):                    
-                    os._exit(0)                
+#             elif f in ('x','X'):
+#                 self.wfile.write("\nServer stopped !\nClose program !\n")            
+#                 shut_event.set()                                            
+#                 if sys.platform.startswith('linux'):
+#                     os.system('pkill -9 python')
+#                     os.kill(os.getpid(), signal.SIGINT)
+#                 elif sys.platform.startswith('win'):                    
+#                     os._exit(0)                
             return
                                 
         except (Exception) as error_mess:                                         
