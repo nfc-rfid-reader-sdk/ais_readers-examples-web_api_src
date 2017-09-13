@@ -5,27 +5,32 @@
 @copyright: D-Logic   http://www.d-logic.net/nfc-rfid-reader-sdk/
  
 """
-__program_version = '4.0.4.5 (build)' 
+__program_version = '4.0.5.0' 
 
-import os
-import sys
 import cgi
-import threading
-import time
+import os
 import requests
-import urllib2, urllib
-from platform import platform
-from urlparse import urlparse, parse_qs
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-from ctypes import *
-from socket import *
 import shutil
 import signal
+import sys
+import threading
+import time
+import urllib2
+import urllib
+
+from BaseHTTPServer import BaseHTTPRequestHandler
+from BaseHTTPServer import HTTPServer
+from ctypes import *
+from platform import platform
+from socket import *
+from urlparse import parse_qs
+from urlparse import urlparse
+from mimetypes import types_map
 
 
 
-from shell.ais_shell import *
 from constants import *
+from shell.ais_shell import *
  
 global edit_time
 
@@ -35,10 +40,10 @@ def AisHttpGetProgramVersion():
 
 
 def http_request(path, post_attrib, time_out=20):
-    try:       
-        req = urllib2.Request(path, post_attrib)        
+    try:
+        req = urllib2.Request(path, post_attrib)
         req.add_header("Content-type", "application/x-www-form-urlencoded")               
-        page = urllib2.urlopen(req, timeout=time_out)        
+        page = urllib2.urlopen(req, timeout=time_out)
         return page.read(), page.code
     except urllib2.URLError, urlExc:
         return '', urlExc.reason
@@ -51,17 +56,24 @@ def http_request(path, post_attrib, time_out=20):
                      
                     
 class GetHandler(BaseHTTPRequestHandler):
-   
     global url_query
-    
-    def do_GET(self):        
-        try:            
-            f = open(os.curdir + os.sep + "ais_readers.html")
-            self.send_response(200)
-            self.send_header("Content-type","text/html")
-            self.end_headers()
-            self.wfile.write(f.read())
-            f.close()            
+
+    def do_GET(self):
+        try:
+            if self.path == '/':
+                self.path = "ais_readers.html"
+
+            fname, ext = os.path.splitext(self.path)
+
+            fname = self.path.lstrip("/")
+
+            if ext in (".html", ".css"):
+                with open(os.path.join(os.curdir, self.path.lstrip("/"))) as f: 
+                    self.send_response(200) 
+                    self.send_header('Content-type', types_map[ext]) 
+                    self.end_headers() 
+                    self.wfile.write(f.read()) 
+                f.close()
             return
         except IOError:
             self.send_error(404,"File Not Found: %s" % self.path)
@@ -99,7 +111,7 @@ class GetHandler(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(c.read())
                     c.close() 
-                    self.wfile.close()                                       
+                    self.wfile.close()
                     return
                 elif f == "D":               
                     self.send_response(200)
