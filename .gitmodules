@@ -1,4 +1,0 @@
-
-[submodule "shell"]
-	path = shell
-	url = https://git.d-logic.net/nfc-rfid-reader-sdk/ais_readers-examples-shell.git
